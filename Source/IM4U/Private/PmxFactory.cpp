@@ -47,6 +47,9 @@
 #include "MMDSkeletalMeshImportData.h"
 #include "MMDStaticMeshImportData.h"
 
+#include "Components/SkeletalMeshComponent.h"
+#include "Rendering/SkeletalMeshModel.h"
+
 #define LOCTEXT_NAMESPACE "PMXImpoter"
 
 DEFINE_LOG_CATEGORY(LogMMD4UE4_PMXFactory)
@@ -1184,17 +1187,14 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	// process bone influences from import data
 	ProcessImportMeshInfluences(*SkelMeshImportDataPtr);
 
-	FSkeletalMeshResource* ImportedResource = SkeletalMesh->GetImportedResource();
+	FSkeletalMeshModel* ImportedResource = SkeletalMesh->GetImportedModel();
 	check(ImportedResource->LODModels.Num() == 0);
 	ImportedResource->LODModels.Empty();
-	new(ImportedResource->LODModels)FStaticLODModel();
+	new(ImportedResource->LODModels)FSkeletalMeshLODModel();
 
-	SkeletalMesh->LODInfo.Empty();
-	SkeletalMesh->LODInfo.AddZeroed();
-	SkeletalMesh->LODInfo[0].LODHysteresis = 0.02f;
-	FSkeletalMeshOptimizationSettings Settings;
-	// set default reduction settings values
-	SkeletalMesh->LODInfo[0].ReductionSettings = Settings;
+	SkeletalMesh->ResetLODInfo();
+	FSkeletalMeshLODInfo & NewLODInfo = SkeletalMesh->AddLODInfo();
+	NewLODInfo.LODHysteresis = 0.02f;
 
 	// Create initial bounding box based on expanded version of reference pose for meshes without physics assets. Can be overridden by artist.
 	FBox BoundingBox(SkelMeshImportDataPtr->Points.GetData(), SkelMeshImportDataPtr->Points.Num());
@@ -1215,8 +1215,9 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	// Store whether or not this mesh has vertex colors
 	SkeletalMesh->bHasVertexColors = SkelMeshImportDataPtr->bHasVertexColors;
+	SkeletalMesh->VertexColorGuid = SkeletalMesh->bHasVertexColors ? FGuid::NewGuid() : FGuid();
 
-	FStaticLODModel& LODModel = ImportedResource->LODModels[0];
+	FSkeletalMeshLODModel& LODModel = ImportedResource->LODModels[0];
 
 	// Pass the number of texture coordinate sets to the LODModel.  Ensure there is at least one UV coord
 	LODModel.NumTexCoords = FMath::Max<uint32>(1, SkelMeshImportDataPtr->NumTexCoords);
@@ -1294,7 +1295,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		const int32 NumSections = LODModel.Sections.Num();
 		for (int32 SectionIndex = 0; SectionIndex < NumSections; ++SectionIndex)
 		{
-			SkeletalMesh->LODInfo[0].TriangleSortSettings.AddZeroed();
+			SkeletalMesh->GetLODInfo(0)->LODMaterialMap.Add(0);
 		}
 
 		if (ExistSkelMeshDataPtr)
@@ -1342,7 +1343,6 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 				else
 				{
 					FPhysAssetCreateParams NewBodyData;
-					NewBodyData.Initialize();
 					FText CreationErrorMessage;
 					bool bSuccess
 						= FPhysicsAssetUtils::CreateFromSkeletalMesh(

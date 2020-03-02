@@ -262,7 +262,7 @@
 			//FbxCamera* CameraNode = NULL;
 			if (Actor == NULL || Actor->IsPendingKill())
 			{
-#if ORIGINAL_FBX_MATINEE_IMPORT
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 				CameraNode = FindCamera(Node);
 				if (bCreateUnknownCameras && CameraNode != NULL)
 				{
@@ -305,8 +305,8 @@
 				}
 
 				//float TimeLength = ImportMatineeActor(Node, MatineeGroup);
-				float TimeLength = ImportMatineeActor(CamNode, MatineeGroup);
-				InterpLength = FMath::Max(InterpLength, TimeLength);
+				//float TimeLength = ImportMatineeActor(CamNode, MatineeGroup);
+				//InterpLength = FMath::Max(InterpLength, TimeLength);
 			}
 
 			// Right now, cameras are the only supported import entity type.
@@ -356,7 +356,7 @@
 		MMD4UE4::VmdCameraTrackList* Camera)
 		//FbxCamera* Camera)
 	{
-#if ORIGINAL_FBX_MATINEE_IMPORT
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		// Get the real camera node that stores customed camera attributes
 		// Note: there is a pivot node between the Fbx camera Node and node attribute
 		FbxNode* FbxCameraNode = Camera->GetNode()->GetParent();
@@ -416,7 +416,7 @@
 		)
 		//FbxCamera* Camera)
 	{
-#if ORIGINAL_FBX_MATINEE_IMPORT
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		if (Scene == NULL || Value == NULL || MatineeGroup == NULL) return;
 
 		// Retrieve the FBX animated element for this value and verify that it contains an animation curve.
@@ -1070,7 +1070,7 @@
 		//TBD::固定値に検討に関してはカーブ特性を調査すること->暫定でCurveAutoClampedにする。
 		EInterpCurveMode Mode = CIM_CurveAutoClamped;
 
-#if ORIGINAL_FBX_MATINEE_IMPORT
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		EInterpCurveMode Mode = CIM_CurveUser;
 
 		// Convert the interpolation type from FBX to Unreal.

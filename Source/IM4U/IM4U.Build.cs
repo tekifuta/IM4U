@@ -56,7 +56,7 @@ namespace UnrealBuildTool.Rules
 
 				if (HaveDebugLib &&
 					Target.Configuration == UnrealTargetConfiguration.Debug &&
-					BuildConfiguration.bDebugBuildsActuallyUseDebugCRT)
+					Target.bDebugBuildsActuallyUseDebugCRT)
 				{
 					LibName += "D";
 				}

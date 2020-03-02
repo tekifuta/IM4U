@@ -71,7 +71,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		bool bCreateRenderData
 		);
 	//////////
-	bool UPmxFactory::ImportBone(
+	bool ImportBone(
 		//TArray<FbxNode*>& NodeArray,
 		MMD4UE4::PmxMeshInfo *PmxMeshInfo,
 		FSkeletalMeshImportData &ImportData,
@@ -82,7 +82,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		bool & bUseTime0AsRefPose
 		);
 	////////////
-	bool UPmxFactory::FillSkelMeshImporterFromFbx(
+	bool FillSkelMeshImporterFromFbx(
 		FSkeletalMeshImportData& ImportData,
 		MMD4UE4::PmxMeshInfo *& PmxMeshInfo
 		//FbxMesh*& Mesh,
@@ -108,7 +108,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 	}
 	///////////////////////////////
 
-	void UPmxFactory::ImportMorphTargetsInternal(
+	void ImportMorphTargetsInternal(
 		//TArray<FbxNode*>& SkelMeshNodeArray,
 		MMD4UE4::PmxMeshInfo & PmxMeshInfo,
 		USkeletalMesh* BaseSkelMesh,
@@ -118,7 +118,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		);
 	///////////////////////////////
 	// Import Morph target
-	void UPmxFactory::ImportFbxMorphTarget(
+	void ImportFbxMorphTarget(
 		//TArray<FbxNode*> &SkelMeshNodeArray,
 		MMD4UE4::PmxMeshInfo & PmxMeshInfo,
 		USkeletalMesh* BaseSkelMesh,
@@ -127,7 +127,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		int32 LODIndex
 		);
 	////////////////////////////////
-	void UPmxFactory::AddTokenizedErrorMessage(
+	void AddTokenizedErrorMessage(
 		TSharedRef<FTokenizedMessage> Error,
 		FName FbxErrorName
 		);

@@ -1301,7 +1301,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked(
 
 		// ColorTex有効の場合はStaticSwitchでONにする 
 		FStaticSwitchParameter Param;
-		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
+		Param.ParameterInfo.Name = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
 		Param.bOverride = true;
 		StaticParams.StaticSwitchParameters.Add(Param);
@@ -1401,7 +1401,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked_Unlit(
 
 		// ColorTex有効の場合はStaticSwitchでONにする 
 		FStaticSwitchParameter Param;
-		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
+		Param.ParameterInfo.Name = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
 		Param.bOverride = true;
 		StaticParams.StaticSwitchParameters.Add(Param);
@@ -1502,7 +1502,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous(
 
 		// ColorTex有効の場合はStaticSwitchでONにする 
 		FStaticSwitchParameter Param;
-		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
+		Param.ParameterInfo.Name = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
 		Param.bOverride = true;
 		StaticParams.StaticSwitchParameters.Add(Param);
@@ -1615,7 +1615,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous_Unlit(
 
 		// ColorTex有効の場合はStaticSwitchでONにする 
 		FStaticSwitchParameter Param;
-		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
+		Param.ParameterInfo.Name = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
 		Param.bOverride = true;
 		StaticParams.StaticSwitchParameters.Add(Param);

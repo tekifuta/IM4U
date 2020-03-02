@@ -23,6 +23,9 @@
 
 #include "VmdFactory.generated.h"
 
+// Forward declaration
+class UInterpGroupInst;
+
 DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_VMDFactory, Log, All)
 
 UCLASS()

@@ -13,6 +13,8 @@
 #include "FbxErrors.h"
 #include "AssetRegistryModule.h"
 #include "Engine/StaticMesh.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Rendering/SkeletalMeshModel.h"
 
 /////////////////////////
 
@@ -31,13 +33,215 @@
 #include "ApexClothingUtils.h"
 #include "Developer/MeshUtilities/Public/MeshUtilities.h"
 
-//#include "MessageLogModule.h"
+#include "Animation/MorphTarget.h"
 #include "ComponentReregisterContext.h"
 ////////////
 
 #include "PmxFactory.h"
 #define LOCTEXT_NAMESPACE "PMXSkeltalMeshImpoter"
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+// FMorphMeshRawSource is removed after version 4.16. So added for only this plugin here.
+// Converts a mesh to raw vertex data used to generate a morph target mesh
+
+/** compare based on base mesh source vertex indices */
+struct FCompareMorphTargetDeltas
+{
+	FORCEINLINE bool operator()(const FMorphTargetDelta& A, const FMorphTargetDelta& B) const
+	{
+		return ((int32)A.SourceIdx - (int32)B.SourceIdx) < 0 ? true : false;
+	}
+};
+
+class FMorphMeshRawSource
+{
+public:
+	struct FMorphMeshVertexRaw
+	{
+		FVector			Position;
+
+		// Tangent, U-direction
+		FVector			TangentX;
+		// Binormal, V-direction
+		FVector			TangentY;
+		// Normal
+		FVector4		TangentZ;
+	};
+
+	/** vertex data used for comparisons */
+	TArray<FMorphMeshVertexRaw> Vertices;
+
+	/** index buffer used for comparison */
+	TArray<uint32> Indices;
+
+	/** indices to original imported wedge points */
+	TArray<uint32> WedgePointIndices;
+
+	/** Constructor (default) */
+	FMorphMeshRawSource() { }
+	FMorphMeshRawSource(USkeletalMesh* SrcMesh, int32 LODIndex = 0);
+	FMorphMeshRawSource(FSkeletalMeshLODModel& LODModel);
+
+	static void CalculateMorphTargetLODModel(const FMorphMeshRawSource& BaseSource,
+		const FMorphMeshRawSource& TargetSource, FMorphTargetLODModel& MorphModel);
+
+private:
+	void Initialize(FSkeletalMeshLODModel& LODModel);
+};
+
+/**
+* Constructor.
+* Converts a skeletal mesh to raw vertex data
+* needed for creating a morph target mesh
+*
+* @param	SrcMesh - source skeletal mesh to convert
+* @param	LODIndex - level of detail to use for the geometry
+*/
+FMorphMeshRawSource::FMorphMeshRawSource(USkeletalMesh* SrcMesh, int32 LODIndex)
+{
+	check(SrcMesh);
+	check(SrcMesh->GetImportedModel());
+	check(SrcMesh->GetImportedModel()->LODModels.IsValidIndex(LODIndex));
+
+	// get the mesh data for the given lod
+	FSkeletalMeshLODModel& LODModel = SrcMesh->GetImportedModel()->LODModels[LODIndex];
+
+	Initialize(LODModel);
+}
+
+FMorphMeshRawSource::FMorphMeshRawSource(FSkeletalMeshLODModel& LODModel)
+{
+	Initialize(LODModel);
+}
+
+void FMorphMeshRawSource::Initialize(FSkeletalMeshLODModel& LODModel)
+{
+	// iterate over the chunks for the skeletal mesh
+	for (int32 SectionIdx = 0; SectionIdx < LODModel.Sections.Num(); SectionIdx++)
+	{
+		const FSkelMeshSection& Section = LODModel.Sections[SectionIdx];
+		for (int32 VertexIdx = 0; VertexIdx < Section.SoftVertices.Num(); VertexIdx++)
+		{
+			const FSoftSkinVertex& SourceVertex = Section.SoftVertices[VertexIdx];
+			FMorphMeshVertexRaw RawVertex =
+			{
+				SourceVertex.Position,
+				SourceVertex.TangentX,
+				SourceVertex.TangentY,
+				SourceVertex.TangentZ
+			};
+			Vertices.Add(RawVertex);
+		}
+	}
+
+	// Copy the indices manually, since the LODModel's index buffer may have a different alignment.
+	Indices.Empty(LODModel.IndexBuffer.Num());
+	for (int32 Index = 0; Index < LODModel.IndexBuffer.Num(); Index++)
+	{
+		Indices.Add(LODModel.IndexBuffer[Index]);
+	}
+
+	// copy the wedge point indices
+	if (LODModel.RawPointIndices.GetBulkDataSize())
+	{
+		WedgePointIndices.Empty(LODModel.RawPointIndices.GetElementCount());
+		WedgePointIndices.AddUninitialized(LODModel.RawPointIndices.GetElementCount());
+		FMemory::Memcpy(WedgePointIndices.GetData(), LODModel.RawPointIndices.Lock(LOCK_READ_ONLY), LODModel.RawPointIndices.GetBulkDataSize());
+		LODModel.RawPointIndices.Unlock();
+	}
+}
+
+void FMorphMeshRawSource::CalculateMorphTargetLODModel(const FMorphMeshRawSource& BaseSource,
+	const FMorphMeshRawSource& TargetSource, FMorphTargetLODModel& MorphModel)
+{
+	// set the original number of vertices
+	MorphModel.NumBaseMeshVerts = BaseSource.Vertices.Num();
+
+	// empty morph mesh vertices first
+	MorphModel.Vertices.Empty();
+
+	// array to mark processed base vertices
+	TArray<bool> WasProcessed;
+	WasProcessed.Empty(BaseSource.Vertices.Num());
+	WasProcessed.AddZeroed(BaseSource.Vertices.Num());
+
+
+	TMap<uint32, uint32> WedgePointToVertexIndexMap;
+	// Build a mapping of wedge point indices to vertex indices for fast lookup later.
+	for (int32 Idx = 0; Idx < TargetSource.WedgePointIndices.Num(); Idx++)
+	{
+		WedgePointToVertexIndexMap.Add(TargetSource.WedgePointIndices[Idx], Idx);
+	}
+
+	// iterate over all the base mesh indices
+	for (int32 Idx = 0; Idx < BaseSource.Indices.Num(); Idx++)
+	{
+		uint32 BaseVertIdx = BaseSource.Indices[Idx];
+
+		// check for duplicate processing
+		if (!WasProcessed[BaseVertIdx])
+		{
+			// mark this base vertex as already processed
+			WasProcessed[BaseVertIdx] = true;
+
+			// get base mesh vertex using its index buffer
+			const FMorphMeshVertexRaw& VBase = BaseSource.Vertices[BaseVertIdx];
+
+			// clothing can add extra verts, and we won't have source point, so we ignore those
+			if (BaseSource.WedgePointIndices.IsValidIndex(BaseVertIdx))
+			{
+				// get the base mesh's original wedge point index
+				uint32 BasePointIdx = BaseSource.WedgePointIndices[BaseVertIdx];
+
+				// find the matching target vertex by searching for one
+				// that has the same wedge point index
+				uint32* TargetVertIdx = WedgePointToVertexIndexMap.Find(BasePointIdx);
+
+				// only add the vertex if the source point was found
+				if (TargetVertIdx != NULL)
+				{
+					// get target mesh vertex using its index buffer
+					const FMorphMeshVertexRaw& VTarget = TargetSource.Vertices[*TargetVertIdx];
+
+					// change in position from base to target
+					FVector PositionDelta(VTarget.Position - VBase.Position);
+					FVector NormalDeltaZ(VTarget.TangentZ - VBase.TangentZ);
+
+					// check if position actually changed much
+					if (PositionDelta.SizeSquared() > FMath::Square(THRESH_POINTS_ARE_NEAR) ||
+						// since we can't get imported morphtarget normal from FBX
+						// we can't compare normal unless it's calculated
+						// this is special flag to ignore normal diff
+						(true && NormalDeltaZ.SizeSquared() > 0.01f))
+					{
+						// create a new entry
+						FMorphTargetDelta NewVertex;
+						// position delta
+						NewVertex.PositionDelta = PositionDelta;
+						// normal delta
+						NewVertex.TangentZDelta = NormalDeltaZ;
+						// index of base mesh vert this entry is to modify
+						NewVertex.SourceIdx = BaseVertIdx;
+
+						// add it to the list of changed verts
+						MorphModel.Vertices.Add(NewVertex);
+					}
+				}
+			}
+		}
+	}
+
+	// sort the array of vertices for this morph target based on the base mesh indices
+	// that each vertex is associated with. This allows us to sequentially traverse the list
+	// when applying the morph blends to each vertex.
+	MorphModel.Vertices.Sort(FCompareMorphTargetDeltas());
+
+	// remove array slack
+	MorphModel.Vertices.Shrink();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// UPmxFactory
 
 bool UPmxFactory::ImportBone(
 	//TArray<FbxNode*>& NodeArray,
@@ -1443,7 +1647,7 @@ public:
 			);
 #else	/* UE4.11 ~ over */
 		MeshUtilities->BuildSkeletalMesh(
-			TempSkeletalMesh->GetImportedResource()->LODModels[0],
+			TempSkeletalMesh->GetImportedModel()->LODModels[0],
 			TempSkeletalMesh->RefSkeleton,
 			LODInfluences,
 			LODWedges,
@@ -1744,13 +1948,16 @@ void UPmxFactory::ImportMorphTargetsInternal(
 		FMorphMeshRawSource TargetMeshRawData(TmpSkeletalMesh);
 		FMorphMeshRawSource BaseMeshRawData(BaseSkelMesh, LODIndex);
 
-		MorphTarget->PostProcess(
-			BaseSkelMesh, 
-			BaseMeshRawData, 
-			TargetMeshRawData,
-			LODIndex, 
-			true//ImportOptions->ShouldImportNormals() == false
-			);
+		FSkeletalMeshLODModel & BaseLODModel = BaseSkelMesh->GetImportedModel()->LODModels[LODIndex];
+		FMorphTargetLODModel Result;
+		FMorphMeshRawSource::CalculateMorphTargetLODModel(BaseMeshRawData, TargetMeshRawData, Result);
+
+		MorphTarget->PopulateDeltas(Result.Vertices, LODIndex, BaseLODModel.Sections, true);
+		// register does mark package as dirty
+		if (MorphTarget->HasValidData())
+		{
+			BaseSkelMesh->RegisterMorphTarget(MorphTarget);
+		}
 	}
 
 	GWarn->EndSlowTask();
@@ -1839,3 +2046,5 @@ void UPmxFactory::AddTokenizedErrorMessage(
 		}
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

@@ -16,6 +16,7 @@
 
 #include "Factory/VmdImportOption.h"
 
+#define LOCTEXT_NAMESPACE "VMDImportFactory"
 
 DEFINE_LOG_CATEGORY(LogMMD4UE4_VMDFactory)
 /////////////////////////////////////////////////////////
@@ -1871,3 +1872,4 @@ FTransform UVmdFactory::CalcGlbTransformFromBoneIndex(
 	return resultTrans;
 }
 
+#undef LOCTEXT_NAMESPACE

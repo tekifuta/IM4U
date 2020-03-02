@@ -19,7 +19,7 @@
 * MMD Extend Info : Ik info
 ***********************/
 // ＩＫリンク情報
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMMD_IKLINK
 {
 	GENERATED_USTRUCT_BODY()
@@ -47,7 +47,7 @@ struct FMMD_IKLINK
 };
 
 // ＩＫ情報
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMMD_IKInfo
 {
 	GENERATED_USTRUCT_BODY()

@@ -9,7 +9,6 @@
 #include "CoreMinimal.h"
 #include "Factories.h"
 #include "SkelImport.h"
-#include "SkeletalMeshSorting.h"
 #include "../../../../Source/Runtime/Engine/Classes/PhysicsEngine/PhysicsAsset.h"
 //#include "FbxImporter.h"
 //#include "FbxErrors.h"
@@ -1072,6 +1071,6 @@ void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* 
 	}
 }
 
-#undef LOCTEXT_NAMESPACE
-
 #endif
+
+#undef LOCTEXT_NAMESPACE
