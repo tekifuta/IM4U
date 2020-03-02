@@ -1,11 +1,20 @@
 ﻿# IM4U Plugin
 
-Import MMD Model and Motion file for UnrealEngine4 Plugin
+Import [MikuMikuDance (MMD)](https://sites.google.com/view/vpvp/) models and motion files plugin for Unreal Engine 4.
 
-create by BlackMa9(bm9)
+PluginDev branch mirror of https://github.com/goopymoon/UnrealEngine_IM4UPlugin/
+(Requires GitHub account with [access to Unreal Engine 4 source code](https://www.unrealengine.com/en-US/ue4-on-github) to see).
 
-This software is released under the MIT License, see LICENSE.txt.
+Original plugin by [BlackMa9(bm9)](https://github.com/bm9/).
 
+Original repository contributors:
+* goopymoon https://github.com/goopymoon/
+* alwei https://github.com/alwei
+* demuyan https://github.com/demuyan
+
+This software is released under the MIT License.
+
+This repository is public and doesn't requires a GitHub account with access to Unreal Engine 4 source code to see it. You can add this repository as a git submodule directly into your Unreal Engine 4 project plugins folder.
 
 # Get Start
 
