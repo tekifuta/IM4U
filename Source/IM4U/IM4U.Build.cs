@@ -74,9 +74,7 @@ namespace UnrealBuildTool.Rules
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-					"IM4U/Private",
-                    "AssetTools",
-                    "AssetRegistry",
+					"IM4U/Private"
 					// ... add other private include paths required here ...
 				}
 				);
