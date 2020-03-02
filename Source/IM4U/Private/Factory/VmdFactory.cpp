@@ -713,8 +713,8 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			TEXT("ImportVMDToAnimSequence : Target MMDExtendAsset is null."));
 	}
 	/********************************/
-	DestSeq->NumFrames = vmdMotionInfo->maxFrame;
-	DestSeq->SequenceLength = FGenericPlatformMath::Max<float>(1.0f / 30.0f*(float)DestSeq->NumFrames, MINIMUM_ANIMATION_LENGTH);
+	DestSeq->SetRawNumberOfFrame(vmdMotionInfo->maxFrame);
+	DestSeq->SequenceLength = FGenericPlatformMath::Max<float>(1.0f / 30.0f * (float)DestSeq->GetNumberOfFrames(), MINIMUM_ANIMATION_LENGTH);
 	/////////////////////////////////
 	const int32 NumBones = Skeleton->GetReferenceSkeleton().GetNum();
 #if 0 /* :UE414: 4.14からのエンジン仕様変更による対象 */
@@ -765,7 +765,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			}
 			//nop
 			//フレーム分同じ値を設定する
-			for (int32 i = 0; i < DestSeq->NumFrames; i++)
+			for (int32 i = 0; i < DestSeq->GetNumberOfFrames(); i++)
 			{
 				FTransform nrmTrnc;
 				nrmTrnc.SetIdentity();
@@ -793,7 +793,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			//事前に各Trackに対し親Bone抜きにLocal座標で全登録予定のフレーム計算しておく（もっと良い処理があれば…検討）
 			//90度以上の軸回転が入るとクォータニオンの為か処理に誤りがあるかで余計な回転が入ってしまう。
 			//→上記により、単にZ回転（ターンモーション）で下半身と上半身の軸が物理的にありえない回転の組み合わせになる。バグ。
-			for (int32 i = 0; i < DestSeq->NumFrames; i++)
+			for (int32 i = 0; i < DestSeq->GetNumberOfFrames(); i++)
 			{
 				if (i == 0)
 				{
@@ -1045,13 +1045,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	TArray<FRawAnimSequenceTrack> ImportRawTrackList;
 	ImportRawTrackList.AddZeroed(NumBones);
 	GWarn->BeginSlowTask(LOCTEXT("BeginImportAnimation", "Importing Animation"), true);
-	for (int32 k = 0; k < DestSeq->NumFrames; k++)
+	for (int32 k = 0; k < DestSeq->GetNumberOfFrames(); k++)
 	{
 		// update status
 		FFormatNamedArguments Args;
 		//Args.Add(TEXT("TrackName"), FText::FromName(BoneName));
 		Args.Add(TEXT("NowKey"), FText::AsNumber(k));
-		Args.Add(TEXT("TotalKey"), FText::AsNumber(DestSeq->NumFrames));
+		Args.Add(TEXT("TotalKey"), FText::AsNumber(DestSeq->GetNumberOfFrames()));
 		//Args.Add(TEXT("TrackIndex"), FText::AsNumber(SourceTrackIdx + 1));
 		Args.Add(TEXT("TotalTracks"), FText::AsNumber(NumBones));
 		//const FText StatusUpate = FText::Format(LOCTEXT("ImportingAnimTrackDetail", "Importing Animation Track [{TrackName}] ({TrackIndex}/{TotalTracks}) - TotalKey {TotalKey}"), Args);
@@ -1059,7 +1059,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			= FText::Format(LOCTEXT("ImportingAnimTrackDetail",
 				"Importing Animation Track Key({NowKey}/{TotalKey}) - TotalTracks {TotalTracks}"),
 				Args);
-		GWarn->StatusForceUpdate(k, DestSeq->NumFrames, StatusUpate);
+		GWarn->StatusForceUpdate(k, DestSeq->GetNumberOfFrames(), StatusUpate);
 
 		for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
 		{
