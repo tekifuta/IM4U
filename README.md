@@ -1,4 +1,4 @@
-﻿# IM4U Plugin
+﻿# IM4U
 
 Import [MikuMikuDance (MMD)](https://sites.google.com/view/vpvp/) models and motion files plugin for Unreal Engine 4.
 
