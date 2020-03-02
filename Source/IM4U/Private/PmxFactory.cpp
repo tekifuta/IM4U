@@ -10,7 +10,7 @@
 
 //#include "FbxImporter.h"
 
-#include "FbxErrors.h"
+#include "Misc/FbxErrors.h"
 #include "AssetRegistryModule.h"
 #include "Engine/StaticMesh.h"
 
@@ -48,6 +48,7 @@
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Rendering/SkeletalMeshModel.h"
+#include "Rendering/SkeletalMeshLODImporterData.h" // Not working? FMeshWedge, FMeshFace, etc.
 
 #define LOCTEXT_NAMESPACE "PMXImpoter"
 

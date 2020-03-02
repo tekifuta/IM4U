@@ -10,7 +10,7 @@
 
 //#include "FbxImporter.h"
 
-#include "FbxErrors.h"
+#include "Misc/FbxErrors.h"
 #include "AssetRegistryModule.h"
 #include "Engine/StaticMesh.h"
 #include "Components/SkeletalMeshComponent.h"
