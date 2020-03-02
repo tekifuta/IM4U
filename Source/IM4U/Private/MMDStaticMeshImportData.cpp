@@ -1,9 +1,9 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
+#include "MMDStaticMeshImportData.h"
 #include "IM4UPrivatePCH.h"
 #include "CoreMinimal.h"
 #include "Engine/StaticMesh.h"
-#include "MMDStaticMeshImportData.h"
 
 UMMDStaticMeshImportData::UMMDStaticMeshImportData(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

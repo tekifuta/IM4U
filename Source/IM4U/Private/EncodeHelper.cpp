@@ -1,6 +1,6 @@
 ﻿
-#include "IM4UPrivatePCH.h"
 #include "EncodeHelper.h"
+#include "IM4UPrivatePCH.h"
 
 std::string EncodeHelper::convert_encoding(const std::string &str, const char *fromcode, const char *tocode)
 {

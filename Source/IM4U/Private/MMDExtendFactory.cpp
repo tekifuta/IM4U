@@ -1,8 +1,8 @@
 // Copyright 2015 BlackMa9. All Rights Reserved.
 
+#include "MMDExtendFactory.h"
 #include "IM4UPrivatePCH.h"
 
-#include "MMDExtendFactory.h"
 #include "MMDExtendAsset.h"
 
 UMMDExtendFactory::UMMDExtendFactory(const FObjectInitializer& ObjectInitializer)

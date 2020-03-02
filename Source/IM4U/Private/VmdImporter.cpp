@@ -1,7 +1,7 @@
 ﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
-#include "IM4UPrivatePCH.h"
 #include "VmdImporter.h"
+#include "IM4UPrivatePCH.h"
 #include "MMDImportHelper.h"
 
 #include "Animation/AnimSequenceBase.h"

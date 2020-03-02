@@ -1,8 +1,8 @@
 // Copyright 2015 BlackMa9. All Rights Reserved.
 
 //#include "TestAssetPJ.h"
-#include "IM4UPrivatePCH.h"
 #include "MyUObjectTestClsFactory.h"
+#include "IM4UPrivatePCH.h"
 #include "MyUObjectTestCls.h"
 
 #include "CoreMinimal.h"

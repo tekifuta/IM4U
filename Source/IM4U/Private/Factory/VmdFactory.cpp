@@ -1,8 +1,8 @@
 ﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
+#include "Factory/VmdFactory.h"
 #include "../IM4UPrivatePCH.h"
 
-#include "Factory/VmdFactory.h"
 #include "VmdImporter.h"
 
 #include "CoreMinimal.h"

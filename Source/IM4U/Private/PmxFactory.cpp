@@ -1,6 +1,6 @@
 ﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
-
+#include "PmxFactory.h"
 #include "IM4UPrivatePCH.h"
 
 #include "CoreMinimal.h"
@@ -39,7 +39,6 @@
 #include "Editor/UnrealEd/Public/PhysicsAssetUtils.h"
 ////////////
 
-#include "PmxFactory.h"
 #include "PmdImporter.h"
 #include "PmxImporter.h"
 #include "PmxImportUI.h"

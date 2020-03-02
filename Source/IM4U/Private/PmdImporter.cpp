@@ -1,7 +1,7 @@
 ﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
-#include "IM4UPrivatePCH.h"
 #include "PmdImporter.h"
+#include "IM4UPrivatePCH.h"
 #include "MMDImportHelper.h"
 
 namespace MMD4UE4

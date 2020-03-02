@@ -1,7 +1,7 @@
 
+#include "Factory/VmdImportOption.h"
 #include "../IM4UPrivatePCH.h"
 
-#include "Factory/VmdImportOption.h"
 #if 0
 void SVMDImportOptions::Construct(const FArguments& InArgs)
 {
