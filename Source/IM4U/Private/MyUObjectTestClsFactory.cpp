@@ -72,7 +72,11 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 	)
 {
 	//bool endianChk = IsLittleEndian();
+	
+	// FEditorDelegates will be deprecated in the next engine update, in the future need to create a Pointer to UEditorSubsystem
+	// and need to include #include "Subsystems/ImportSubsystem.h"
 
+	// UEditorSubsystemPtr::BroadcastAssetPreImport(this, InClass, InParent, InName, Type);
 	FEditorDelegates::OnAssetPreImport.Broadcast(this, InClass, InParent, InName, Type);
 
 	check(InClass == UMyUObjectTestCls::StaticClass());
