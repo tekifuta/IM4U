@@ -1100,7 +1100,8 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	for (int32 MaterialIndex = 0; MaterialIndex < pmxMeshInfoPtr->materialList.Num(); ++MaterialIndex)
 	{
 		// Add an entry for each unique material
-		SkelMeshImportDataPtr->Materials.Add(VMaterial());
+		SkeletalMeshImportData::FMaterial NewMaterial;
+		SkelMeshImportDataPtr->Materials.Add(NewMaterial);
 	}
 	/*
 	for (int32 NodeIndex = 0; NodeIndex < NodeArray.Num(); ++NodeIndex)

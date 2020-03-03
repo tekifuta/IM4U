@@ -400,7 +400,7 @@ bool UPmxFactory::ImportBone(
 	for (int LinkIndex = 0; LinkIndex<PmxMeshInfo->boneList.Num(); LinkIndex++)
 	{
 		// Add a bone for each FBX Link
-		ImportData.RefBonesBinary.Add(VBone());
+		ImportData.RefBonesBinary.Add(SkeletalMeshImportData::FBone());
 
 		//Link = SortedLinks[LinkIndex];
 
@@ -527,7 +527,7 @@ bool UPmxFactory::ImportBone(
 
 		//ImportData.RefBonesBinary.AddZeroed();
 		// set bone
-		VBone& Bone = ImportData.RefBonesBinary[LinkIndex];
+		SkeletalMeshImportData::FBone& Bone = ImportData.RefBonesBinary[LinkIndex];
 		FString BoneName;
 
 		/*const char* LinkName = Link->GetName();
@@ -535,7 +535,7 @@ bool UPmxFactory::ImportBone(
 		BoneName = PmxMeshInfo->boneList[LinkIndex].Name;//For MMD
 		Bone.Name = BoneName;
 
-		VJointPos& JointMatrix = Bone.BonePos;
+		SkeletalMeshImportData::FJointPos& JointMatrix = Bone.BonePos;
 #if 0//Test2
 		FbxSkeleton* Skeleton = Link->GetSkeleton();
 		if (Skeleton)
@@ -1079,7 +1079,7 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 	int32 ExistFaceNum = ImportData.Faces.Num();
 	ImportData.Faces.AddUninitialized(TriangleCount);
 	int32 ExistWedgesNum = ImportData.Wedges.Num();
-	VVertex TmpWedges[3];
+	SkeletalMeshImportData::FVertex TmpWedges[3];
 
 	int32 facecount =0;
 	int32 matIndx = 0;
@@ -1087,7 +1087,7 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 	for (int32 TriangleIndex = ExistFaceNum, LocalIndex = 0; TriangleIndex < ExistFaceNum + TriangleCount; TriangleIndex++, LocalIndex++)
 	{
 
-		VTriangle& Triangle = ImportData.Faces[TriangleIndex];
+		SkeletalMeshImportData::FTriangle& Triangle = ImportData.Faces[TriangleIndex];
 
 		//
 		// smoothing mask
