@@ -1627,9 +1627,9 @@ public:
 	void DoWork()
 	{
 		TArray<FVector> LODPoints;
-		TArray<FMeshWedge> LODWedges;
-		TArray<FMeshFace> LODFaces;
-		TArray<FVertInfluence> LODInfluences;
+		TArray<SkeletalMeshImportData::FMeshWedge> LODWedges;
+		TArray<SkeletalMeshImportData::FMeshFace> LODFaces;
+		TArray<SkeletalMeshImportData::FVertInfluence> LODInfluences;
 		TArray<int32> LODPointToRawMap;
 		ImportData.CopyLODImportData(LODPoints, LODWedges, LODFaces, LODInfluences, LODPointToRawMap);
 

@@ -48,7 +48,7 @@
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Rendering/SkeletalMeshModel.h"
-#include "Rendering/SkeletalMeshLODImporterData.h" // Not working? FMeshWedge, FMeshFace, etc.
+
 
 #define LOCTEXT_NAMESPACE "PMXImpoter"
 
@@ -1225,9 +1225,9 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	if (bCreateRenderData)
 	{
 		TArray<FVector> LODPoints;
-		TArray<FMeshWedge> LODWedges;
-		TArray<FMeshFace> LODFaces;
-		TArray<FVertInfluence> LODInfluences;
+		TArray<SkeletalMeshImportData::FMeshWedge> LODWedges;
+		TArray<SkeletalMeshImportData::FMeshFace> LODFaces;
+		TArray<SkeletalMeshImportData::FVertInfluence> LODInfluences;
 		TArray<int32> LODPointToRawMap;
 		SkelMeshImportDataPtr->CopyLODImportData(LODPoints, LODWedges, LODFaces, LODInfluences, LODPointToRawMap);
 
