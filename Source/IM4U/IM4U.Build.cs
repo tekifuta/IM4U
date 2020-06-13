@@ -64,6 +64,10 @@ namespace UnrealBuildTool.Rules
 				PublicAdditionalLibraries.Add(Path.Combine(LibraryPath, LibName + ".lib"));
 
 			}
+			else if (Target.Platform == UnrealTargetPlatform.Mac)
+			{
+				PublicAdditionalLibraries.Add("/usr/lib/libiconv.dylib");
+			}
 			
 			
 			PublicIncludePaths.AddRange(
