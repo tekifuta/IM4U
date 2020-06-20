@@ -33,7 +33,7 @@ std::string EncodeHelper::convert_encoding(const std::string &str, const char *f
 		else if (err == EILSEQ) {
 			errstr = "An invalid multibyte sequence has been encountered in the input";
 		}
-		else if (err = EINVAL) {
+		else if (err == EINVAL) {
 			errstr = "An incomplete multibyte sequence has been encountered in the input";
 		}
 		iconv_close(icd);

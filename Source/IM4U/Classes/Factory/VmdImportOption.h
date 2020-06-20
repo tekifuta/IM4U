@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "MainFrame.h"
-#include "Modules\ModuleManager.h"
+#include "Modules/ModuleManager.h"
 //#include "DirectoryWatcherModule.h"
 //#include "../../../DataTableEditor/Public/IDataTableEditor.h"
 #include "Engine/UserDefinedStruct.h"

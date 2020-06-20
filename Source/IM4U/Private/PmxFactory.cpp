@@ -220,7 +220,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 	if (!pmxImportResult)
 	{
 		// Log the error message and fail the import.
-		Warn->Log(ELogVerbosity::Error, L"PMX Import ERR...FLT");
+		Warn->Log(ELogVerbosity::Error, "PMX Import ERR...FLT");
 		FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
 		return NULL;
 	}
@@ -606,7 +606,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 		if (NewObject == NULL)
 		{
 			AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Error, LOCTEXT("FailedToImport_NoObject", "Import failed.")), FFbxErrors::Generic_ImportingNewObjectFailed);
-			Warn->Log(ELogVerbosity::Error, L"PMX Import ERR [NewObject is NULL]...FLT");
+			Warn->Log(ELogVerbosity::Error, "PMX Import ERR [NewObject is NULL]...FLT");
 		}
 
 		//FbxImporter->ReleaseScene();
