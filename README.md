@@ -16,7 +16,7 @@ This software is released under the MIT License.
 
 This repository is public and doesn't requires a GitHub account with access to Unreal Engine 4 source code to see it. You can add this repository as a git submodule directly into your Unreal Engine 4 project plugins folder.
 
-Latest Unreal Engine 4 version tested: **4.24.3**.
+Latest Unreal Engine 4 version tested: **4.25.1**
 
 # Get Start
 
