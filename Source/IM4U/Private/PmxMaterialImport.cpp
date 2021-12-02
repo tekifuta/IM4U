@@ -126,7 +126,7 @@ void UPmxMaterialImport::AssetsCreateTextuer(
 				AssetToolsModule.Get().CreateUniqueAssetName(
 					BasePackageName, TEXT(""), 
 					TexturePackageName, TextureName);
-				TexturePackage = CreatePackage(NULL, *TexturePackageName);
+				TexturePackage = CreatePackage(*TexturePackageName);
 			}
 
 			const uint8* BufferBegin = Data.GetData();
@@ -316,7 +316,7 @@ UTexture* UPmxMaterialImport::ImportTexture(
 		FString FinalPackageName;
 		AssetToolsModule.Get().CreateUniqueAssetName(BasePackageName, Suffix, FinalPackageName, TextureName);
 
-		TexturePackage = CreatePackage(NULL, *FinalPackageName);
+		TexturePackage = CreatePackage(*FinalPackageName);
 	}
 	else
 	{
@@ -745,7 +745,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 		FString FinalPackageName;
 		AssetToolsModule.Get().CreateUniqueAssetName(BasePackageName, Suffix, FinalPackageName, MaterialFullName);
 
-		UPackage* Package = CreatePackage(NULL, *FinalPackageName);
+		UPackage* Package = CreatePackage(*FinalPackageName);
 
 
 		// create an unreal material asset
@@ -1225,7 +1225,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst(
 		FString FinalPackageName;
 		AssetToolsModule.Get().CreateUniqueAssetName(TargetPathName, Suffix, FinalPackageName, NewMICName);
 
-		UPackage* Package = CreatePackage(NULL, *FinalPackageName);
+		UPackage* Package = CreatePackage(*FinalPackageName);
 		UObject* NewAsset = Factory->FactoryCreateNew(
 			UMaterialInstanceConstant::StaticClass(), Package, *NewMICName, RF_Standalone | RF_Public, NULL, GWarn);
 

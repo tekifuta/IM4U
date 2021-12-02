@@ -28,5 +28,5 @@ class UMMDMeshImportData : public UFbxAssetImportData// UMMDAssetImportData
 	UPROPERTY(EditAnywhere, AdvancedDisplay, config, Category=ImportSettings, meta=(ImportType="Mesh"))
 	TEnumAsByte<enum EMMDNormalImportMethod> NormalImportMethod;
 
-	bool CanEditChange( const UProperty* InProperty ) const;
+	bool CanEditChange( const FProperty* InProperty ) const;
 };

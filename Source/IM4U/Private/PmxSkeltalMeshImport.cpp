@@ -1561,12 +1561,12 @@ UObject* UPmxFactory::CreateAssetOfClass(
 	)
 {
 	// See if this sequence already exists.
-	UObject* 	ParentPkg = CreatePackage(NULL, *ParentPackageName);
+	UObject* 	ParentPkg = CreatePackage(*ParentPackageName);
 	FString 	ParentPath = FString::Printf(
 								TEXT("%s/%s"), 
 								*FPackageName::GetLongPackagePath(*ParentPackageName),
 								*ObjectName);
-	UObject* 	Parent = CreatePackage(NULL, *ParentPath);
+	UObject* 	Parent = CreatePackage(*ParentPath);
 	// See if an object with this name exists
 	UObject* Object = LoadObject<UObject>(Parent, *ObjectName, NULL, LOAD_None, NULL);
 
@@ -1648,6 +1648,7 @@ public:
 #else	/* UE4.11 ~ over */
 		MeshUtilities->BuildSkeletalMesh(
 			TempSkeletalMesh->GetImportedModel()->LODModels[0],
+			TempSkeletalMesh->GetName(),
 			TempSkeletalMesh->RefSkeleton,
 			LODInfluences,
 			LODWedges,
@@ -1881,12 +1882,13 @@ void UPmxFactory::ImportMorphTargetsInternal(
 			
 			// Process the skeletal mesh on a separate thread
 			FAsyncTask<FAsyncImportMorphTargetWork>* NewWork
-				= new (PendingWork)FAsyncTask<FAsyncImportMorphTargetWork>(
+				= new FAsyncTask<FAsyncImportMorphTargetWork>(
 					TmpSkeletalMesh,
 					LODIndex,
 					ImportData,
 					true// ImportOptions->bKeepOverlappingVertices
 					);
+			PendingWork.Add(NewWork);
 			NewWork->StartBackgroundTask();
 			
 			++ShapeIndex;

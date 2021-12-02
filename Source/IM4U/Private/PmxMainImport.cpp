@@ -373,7 +373,7 @@ UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
 }
 
 
-bool UPmxImportUI::CanEditChange(const UProperty* InProperty) const
+bool UPmxImportUI::CanEditChange(const FProperty* InProperty) const
 {
 	bool bIsMutable = Super::CanEditChange(InProperty);
 	if (bIsMutable && InProperty != NULL)

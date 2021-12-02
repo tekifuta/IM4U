@@ -76,8 +76,10 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 	// FEditorDelegates will be deprecated in the next engine update, in the future need to create a Pointer to UEditorSubsystem
 	// and need to include #include "Subsystems/ImportSubsystem.h"
 
+	UImportSubsystem* ImportSubsystem = GEditor->GetEditorSubsystem<UImportSubsystem>();
 	// UEditorSubsystemPtr::BroadcastAssetPreImport(this, InClass, InParent, InName, Type);
-	FEditorDelegates::OnAssetPreImport.Broadcast(this, InClass, InParent, InName, Type);
+	
+	ImportSubsystem->OnAssetPreImport.Broadcast(this, InClass, InParent, InName, Type);
 
 	check(InClass == UMyUObjectTestCls::StaticClass());
 
@@ -105,8 +107,8 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 		PmdMeshInfo.ConvertToPmxFormat(&PmxMeshInfo);
 		UE_LOG(LogCategoryPMXFactory, Warning, TEXT("PMD Import Header Complete."));
 		///////////
-		//PMX
-		FEditorDelegates::OnAssetPostImport.Broadcast(this, NewMyAsset);
+		//PMX		
+		ImportSubsystem->OnAssetPostImport.Broadcast(this, NewMyAsset);
 #if 0
 		SPMXHeader BufferPMXHeaderPtr__Impl;
 #endif
@@ -210,7 +212,7 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 	else
 	{
 		//PMX
-		FEditorDelegates::OnAssetPostImport.Broadcast(this, NewMyAsset);
+		ImportSubsystem->OnAssetPostImport.Broadcast(this, NewMyAsset);
 #if 0
 		SPMXHeader BufferPMXHeaderPtr__Impl;
 #endif
@@ -1756,11 +1758,11 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMesh(
 	// Create the UStaticMesh object.
 	//FStaticMeshComponentRecreateRenderStateContext RecreateRenderStateContext(FindObject<UStaticMesh>(InOuter, *InName.ToString()));
 	auto StaticMesh = NewObject<UStaticMesh>(InOuter, InName, RF_Public | RF_Standalone);
-
-	FEditorDelegates::OnAssetPostImport.Broadcast(this, StaticMesh);
+	UImportSubsystem* ImportSubsystem = GEditor->GetEditorSubsystem<UImportSubsystem>();
+	ImportSubsystem->OnAssetPostImport.Broadcast(this, StaticMesh);
 
 	// Add one LOD for the base mesh
-	FStaticMeshSourceModel* SrcModel = new(StaticMesh->SourceModels) FStaticMeshSourceModel();
+	FStaticMeshSourceModel* SrcModel = new(StaticMesh->GetSourceModels()) FStaticMeshSourceModel();
 	SrcModel->RawMeshBulkData->SaveRawMesh(RawMesh);
 	//StaticMesh->Materials = Materials;
 
@@ -1775,10 +1777,10 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMesh(
 	// Set up the SectionInfoMap to enable collision
 	for (int32 SectionIdx = 0; SectionIdx < NumSections; ++SectionIdx)
 	{
-		FMeshSectionInfo Info = StaticMesh->SectionInfoMap.Get(0, SectionIdx);
+		FMeshSectionInfo Info = StaticMesh->GetSectionInfoMap().Get(0, SectionIdx);
 		Info.MaterialIndex = SectionIdx;
 		Info.bEnableCollision = true;
-		StaticMesh->SectionInfoMap.Set(0, SectionIdx, Info);
+		StaticMesh->GetSectionInfoMap().Set(0, SectionIdx, Info);
 	}
 	// @todo This overrides restored values currently 
 	// but we need to be able to import over the existing settings 
@@ -1828,7 +1830,7 @@ AActor* UMyUObjectTestClsFactory::ConvertBrushesToStaticMesh(
 	AssetToolsModule.Get().CreateUniqueAssetName(
 		BasePackageName, TEXT(""),
 		StaticMeshPackageName, StaticMeshName);
-	UPackage* Pkg = CreatePackage(NULL, *StaticMeshPackageName);
+	UPackage* Pkg = CreatePackage(*StaticMeshPackageName);
 
 	FName ObjName = *FPackageName::GetLongPackageAssetName(StaticMeshName);
 			//*StaticMeshPackageName;

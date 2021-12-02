@@ -37,7 +37,7 @@ UMMDStaticMeshImportData* UMMDStaticMeshImportData::GetImportDataForStaticMesh(U
 	return ImportData;
 }
 
-bool UMMDStaticMeshImportData::CanEditChange(const UProperty* InProperty) const
+bool UMMDStaticMeshImportData::CanEditChange(const FProperty* InProperty) const
 {
 	bool bMutable = Super::CanEditChange(InProperty);
 	UObject* Outer = GetOuter();

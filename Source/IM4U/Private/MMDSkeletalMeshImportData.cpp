@@ -31,7 +31,7 @@ UMMDSkeletalMeshImportData* UMMDSkeletalMeshImportData::GetImportDataForSkeletal
 	return ImportData;
 }
 
-bool UMMDSkeletalMeshImportData::CanEditChange(const UProperty* InProperty) const
+bool UMMDSkeletalMeshImportData::CanEditChange(const FProperty* InProperty) const
 {
 	bool bMutable = Super::CanEditChange(InProperty);
 	UObject* Outer = GetOuter();
