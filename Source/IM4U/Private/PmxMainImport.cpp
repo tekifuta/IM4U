@@ -11,7 +11,7 @@ Main implementation of FFbxImporter : import FBX data to Unreal
 
 #include "Factories.h"
 #include "Engine.h"
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
 //#include "FbxErrors.h"
 #include "PmxImporter.h"
 #include "PmxFactory.h"

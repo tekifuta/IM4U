@@ -20,7 +20,7 @@
 
 #include "Engine.h"
 #include "TextureLayout.h"
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
 //#include "FbxImporter.h"
 #include "AnimEncoding.h"
 #include "SSkeletonWidget.h"
@@ -1649,7 +1649,7 @@ public:
 		MeshUtilities->BuildSkeletalMesh(
 			TempSkeletalMesh->GetImportedModel()->LODModels[0],
 			TempSkeletalMesh->GetName(),
-			TempSkeletalMesh->RefSkeleton,
+			TempSkeletalMesh->GetRefSkeleton(),
 			LODInfluences,
 			LODWedges,
 			LODFaces,

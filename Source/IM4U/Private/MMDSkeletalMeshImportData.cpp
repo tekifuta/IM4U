@@ -14,18 +14,18 @@ UMMDSkeletalMeshImportData* UMMDSkeletalMeshImportData::GetImportDataForSkeletal
 {
 	check(SkeletalMesh);
 	
-	UMMDSkeletalMeshImportData* ImportData = Cast<UMMDSkeletalMeshImportData>(SkeletalMesh->AssetImportData);
+	UMMDSkeletalMeshImportData* ImportData = Cast<UMMDSkeletalMeshImportData>(SkeletalMesh->GetAssetImportData());
 	if ( !ImportData )
 	{
 		ImportData = NewObject<UMMDSkeletalMeshImportData>(SkeletalMesh, NAME_None, RF_NoFlags, TemplateForCreation);
 
 		// Try to preserve the source file path if possible
-		if ( SkeletalMesh->AssetImportData != NULL )
+		if ( SkeletalMesh->GetAssetImportData() != NULL )
 		{
-			ImportData->SourceData = SkeletalMesh->AssetImportData->SourceData;
+			ImportData->SourceData = SkeletalMesh->GetAssetImportData()->SourceData;
 		}
-
-		SkeletalMesh->AssetImportData = ImportData;
+		
+		SkeletalMesh->SetAssetImportData(ImportData);
 	}
 
 	return ImportData;

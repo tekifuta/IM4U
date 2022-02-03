@@ -11,7 +11,7 @@
 #include "Factories.h"
 #include "BusyCursor.h"
 #include "SSkeletonWidget.h"
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
 #include "PmxImporter.h"
 #include "PmxImportUI.h"
 #include "PmxMaterialImport.h"

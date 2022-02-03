@@ -19,7 +19,8 @@
 #include "Engine.h"
 #include "Editor.h"
 #include "TextureLayout.h"
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
+#include "ImportUtils/SkeletalMeshImportUtils.h"
 //#include "FbxImporter.h"
 #include "AnimEncoding.h"
 #include "SSkeletonWidget.h"
@@ -1173,17 +1174,17 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	}
 
 	// process materials from import data
-	SkeletalMeshHelper::ProcessImportMeshMaterials(SkeletalMesh->Materials, *SkelMeshImportDataPtr);
+	SkeletalMeshImportUtils::ProcessImportMeshMaterials(SkeletalMesh->GetMaterials(), *SkelMeshImportDataPtr);
 
 	// process reference skeleton from import data
 	int32 SkeletalDepth = 0;
-	if (!SkeletalMeshHelper::ProcessImportMeshSkeleton(SkeletalMesh->Skeleton, SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
+	if (!SkeletalMeshImportUtils::ProcessImportMeshSkeleton(SkeletalMesh->GetSkeleton(), SkeletalMesh->GetRefSkeleton(), SkeletalDepth, *SkelMeshImportDataPtr))
 	{
 		SkeletalMesh->ClearFlags(RF_Standalone);
 		SkeletalMesh->Rename(NULL, GetTransientPackage());
 		return NULL;
 	}
-	UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("Bones digested - %i  Depth of hierarchy - %i"), SkeletalMesh->RefSkeleton.GetNum(), SkeletalDepth);
+	UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("Bones digested - %i  Depth of hierarchy - %i"), SkeletalMesh->GetRefSkeleton().GetNum(), SkeletalDepth);
 
 	// process bone influences from import data
 	FLODUtilities::ProcessImportMeshInfluences(SkelMeshImportDataPtr->Wedges.Num(), SkelMeshImportDataPtr->Influences, SkeletalMesh->GetPathName());
@@ -1215,8 +1216,8 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 #endif
 
 	// Store whether or not this mesh has vertex colors
-	SkeletalMesh->bHasVertexColors = SkelMeshImportDataPtr->bHasVertexColors;
-	SkeletalMesh->VertexColorGuid = SkeletalMesh->bHasVertexColors ? FGuid::NewGuid() : FGuid();
+	SkeletalMesh->SetHasVertexColors(SkelMeshImportDataPtr->bHasVertexColors);
+	SkeletalMesh->SetVertexColorGuid(SkeletalMesh->bHasVertexColors ? FGuid::NewGuid() : FGuid());
 
 	FSkeletalMeshLODModel& LODModel = ImportedResource->LODModels[0];
 
@@ -1259,7 +1260,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		if (!MeshUtilities.BuildSkeletalMesh(
 			ImportedResource->LODModels[0],
 			SkeletalMesh->GetName(),
-			SkeletalMesh->RefSkeleton,
+			SkeletalMesh->GetRefSkeleton(),
 			LODInfluences,
 			LODWedges,
 			LODFaces,
@@ -1311,7 +1312,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		SkeletalMesh->AssetImportData->SourceFileTimestamp = IFileManager::Get().GetTimeStamp(*UFactory::CurrentFilename).ToString();
 		SkeletalMesh->AssetImportData->bDirty = false;
 		*/
-		SkeletalMesh->AssetImportData->Update(UFactory::CurrentFilename);
+		SkeletalMesh->GetAssetImportData()->Update(UFactory::CurrentFilename);
 
 		SkeletalMesh->CalculateInvRefMatrices();
 		SkeletalMesh->PostEditChange();
@@ -1334,7 +1335,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		// Create PhysicsAsset if requested and if physics asset is null
 		if (ImportUI->bCreatePhysicsAsset)
 		{
-			if (SkeletalMesh->PhysicsAsset == NULL)
+			if (SkeletalMesh->GetPhysicsAsset() == NULL)
 			{
 				FString ObjectName = FString::Printf(TEXT("%s_PhysicsAsset"), *SkeletalMesh->GetName());
 				UPhysicsAsset * NewPhysicsAsset = CreateAsset<UPhysicsAsset>(InParent->GetName(), ObjectName, true); 
@@ -1416,9 +1417,9 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 			}
 			*/
 		}
-		if (SkeletalMesh->Skeleton != Skeleton)
+		if (SkeletalMesh->GetSkeleton() != Skeleton)
 		{
-			SkeletalMesh->Skeleton = Skeleton;
+			SkeletalMesh->SetSkeleton(Skeleton);
 			SkeletalMesh->MarkPackageDirty();
 		}
 	}
@@ -1436,14 +1437,14 @@ UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 	UMMDExtendAsset * NewMMDExtendAsset = NULL;
 
 	//Add UE4.9
-	if (SkeletalMesh->Skeleton == NULL)
+	if (SkeletalMesh->GetSkeleton() == NULL)
 	{
 		return NULL;
 	}
-	check(SkeletalMesh->Skeleton);
+	check(SkeletalMesh->GetSkeleton());
 
 	//issue #2 : Fix MMDExtend IK Index
-	const FReferenceSkeleton ReferenceSkeleton = SkeletalMesh->Skeleton->GetReferenceSkeleton();
+	const FReferenceSkeleton ReferenceSkeleton = SkeletalMesh->GetSkeleton()->GetReferenceSkeleton();
 	const FName& Name = FName(*SkeletalMesh->GetName());
 
 	//MMD Extend asset

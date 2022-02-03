@@ -6,7 +6,7 @@
 #include "VmdImporter.h"
 
 #include "CoreMinimal.h"
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
 #include "AnimationUtils.h"
 #include "ObjectTools.h"
 #include "AssetRegistryModule.h"
@@ -174,7 +174,7 @@ InportOption画面にて指定することで取り込むことが可能です�
 			Skeleton = ImportUI->Skeleton;
 			SkeletalMesh = ImportUI->SkeletonMesh;
 			/* 最低限のパラメータ設定チェック */
-			if ( (!Skeleton) ||  (!SkeletalMesh) || (Skeleton != SkeletalMesh->Skeleton))
+			if ( (!Skeleton) ||  (!SkeletalMesh) || (Skeleton != SkeletalMesh->GetSkeleton()))
 			{
 
 				UE_LOG(LogMMD4UE4_VMDFactory, Warning,
@@ -224,7 +224,7 @@ Retry ImportOption!"
 			/*包含関係チェック*/
 			if (SkeletalMesh)
 			{
-				if (Skeleton != SkeletalMesh->Skeleton)
+				if (Skeleton != SkeletalMesh->GetSkeleton())
 				{
 					//TBD::ERR case
 					{

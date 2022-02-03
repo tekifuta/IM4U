@@ -9,7 +9,7 @@
 #include "Factories.h"
 
 
-#include "SkelImport.h"
+#include "ImportUtils/SkelImport.h"
 #include "AnimationUtils.h"
 
 #include "VmdImportUI.h"
