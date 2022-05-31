@@ -205,7 +205,7 @@ void ApplyImportUIToImportOptions(
 	{
 		UMMDStaticMeshImportData* StaticMeshData = ImportUI->StaticMeshImportData;
 		InOutImportOptions.NormalImportMethod = StaticMeshData->NormalImportMethod;
-		InOutImportOptions.ImportTranslation = StaticMeshData->ImportTranslation;
+		InOutImportOptions.ImportTranslation = (FVector3f)StaticMeshData->ImportTranslation;
 		InOutImportOptions.ImportRotation = StaticMeshData->ImportRotation;
 		InOutImportOptions.ImportUniformScale = StaticMeshData->ImportUniformScale;
 	}
@@ -213,7 +213,7 @@ void ApplyImportUIToImportOptions(
 	{
 		UMMDSkeletalMeshImportData* SkeletalMeshData = ImportUI->SkeletalMeshImportData;
 		InOutImportOptions.NormalImportMethod = SkeletalMeshData->NormalImportMethod;
-		InOutImportOptions.ImportTranslation = SkeletalMeshData->ImportTranslation;
+		InOutImportOptions.ImportTranslation = (FVector3f)SkeletalMeshData->ImportTranslation;
 		InOutImportOptions.ImportRotation = SkeletalMeshData->ImportRotation;
 		InOutImportOptions.ImportUniformScale = SkeletalMeshData->ImportUniformScale;
 

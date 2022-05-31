@@ -42,16 +42,16 @@ namespace MMD4UE4
 	// 頂点データ
 	struct PMX_VERTEX
 	{
-		FVector		Position;						// 座標
-		FVector		Normal;							// 法線
-		FVector2D	UV;								// 標準UV値
+		FVector3f		Position;						// 座標
+		FVector3f		Normal;							// 法線
+		FVector2f	UV;								// 標準UV値
 		FVector4	AddUV[4];						// 追加UV値
 		uint8		WeightType;						// ウエイトタイプ( 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF )
 		uint32		BoneIndex[4];					// ボーンインデックス
 		float		BoneWeight[4];					// ボーンウェイト
-		FVector		SDEF_C;							// SDEF-C
-		FVector		SDEF_R0;						// SDEF-R0
-		FVector		SDEF_R1;						// SDEF-R1
+		FVector3f		SDEF_C;							// SDEF-C
+		FVector3f		SDEF_R0;						// SDEF-R0
+		FVector3f		SDEF_R1;						// SDEF-R1
 		float		ToonEdgeScale;					// トゥーンエッジのスケール
 	};
 
@@ -122,7 +122,7 @@ namespace MMD4UE4
 	{
 		FString	Name;						// 名前
 		FString	NameEng;						// 名前
-		FVector	Position;						// 座標
+		FVector3f	Position;						// 座標
 		int		ParentBoneIndex;					// 親ボーンインデックス
 		int		TransformLayer;					// 変形階層
 
@@ -139,13 +139,13 @@ namespace MMD4UE4
 		uint8	Flag_AfterPhysicsTransform;		// 物理後変形
 		uint8	Flag_OutParentTransform;			// 外部親変形
 
-		FVector	OffsetPosition;				// オフセット座標
+		FVector3f	OffsetPosition;				// オフセット座標
 		int		LinkBoneIndex;						// 接続先ボーンインデックス
 		int		AddParentBoneIndex;				// 付与親ボーンインデックス
 		float	AddRatio;							// 付与率
-		FVector	LockAxisVector;				// 軸固定時の軸の方向ベクトル
-		FVector	LocalAxisXVector;				// ローカル軸のＸ軸
-		FVector	LocalAxisZVector;				// ローカル軸のＺ軸
+		FVector3f	LockAxisVector;				// 軸固定時の軸の方向ベクトル
+		FVector3f	LocalAxisXVector;				// ローカル軸のＸ軸
+		FVector3f	LocalAxisZVector;				// ローカル軸のＺ軸
 		int		OutParentTransformKey;				// 外部親変形時の Key値
 
 		PMX_IK	IKInfo;							// ＩＫ情報
@@ -155,7 +155,7 @@ namespace MMD4UE4
 	struct PMX_MORPH_VERTEX
 	{
 		int		Index;								// 頂点インデックス
-		FVector	Offset;						// 頂点座標オフセット
+		FVector3f	Offset;						// 頂点座標オフセット
 	};
 
 	// ＵＶモーフ情報
@@ -169,7 +169,7 @@ namespace MMD4UE4
 	struct PMX_MORPH_BONE
 	{
 		int		Index;								// ボーンインデックス
-		FVector	Offset;						// 座標オフセット
+		FVector3f	Offset;						// 座標オフセット
 		float	Quat[4];							// 回転クォータニオン
 	};
 
@@ -229,7 +229,7 @@ namespace MMD4UE4
 		float	ShapeH;							// 高さ
 		float	ShapeD;							// 奥行
 
-		FVector	Position;						// 位置
+		FVector3f	Position;						// 位置
 		float	Rotation[3];						// 回転( ラジアン )
 
 		float	RigidBodyWeight;					// 質量
@@ -251,7 +251,7 @@ namespace MMD4UE4
 		int		RigidBodyAIndex;					// 接続先剛体Ａ
 		int		RigidBodyBIndex;					// 接続先剛体Ｂ
 
-		FVector	Position;						// 位置
+		FVector3f	Position;						// 位置
 		float	Rotation[3];						// 回転( ラジアン )
 
 		float	ConstrainPositionMin[3];			// 移動制限-下限
@@ -337,7 +337,7 @@ struct PMXImportOptions
 	bool bUsedAsFullName;
 	bool bConvertScene;
 	bool bRemoveNameSpace;
-	FVector ImportTranslation;
+	FVector3f ImportTranslation;
 	FRotator ImportRotation;
 	float ImportUniformScale;
 	EMMDNormalImportMethod NormalImportMethod;
@@ -859,7 +859,7 @@ protected:
 	* @return bool true if set up successfully
 	*/
 	bool BuildStaticMeshFromGeometry(FbxMesh* FbxMesh, UStaticMesh* StaticMesh, TArray<FFbxMaterial>& MeshMaterials, int LODIndex,
-		EVertexColorImportOption::Type VertexColorImportOption, const TMap<FVector, FColor>& ExistingVertexColorData, const FColor& VertexOverrideColor);
+		EVertexColorImportOption::Type VertexColorImportOption, const TMap<FVector3f, FColor>& ExistingVertexColorData, const FColor& VertexOverrideColor);
 #endif
 	/**
 	* Clean up for destroy the Importer.

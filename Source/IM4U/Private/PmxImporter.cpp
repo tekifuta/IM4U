@@ -393,7 +393,7 @@ namespace MMD4UE4
 			{
 				boneList[PmxBoneNum].Name = TEXT("Root");
 				boneList[PmxBoneNum].NameEng = "AllTopRootBone";
-				boneList[PmxBoneNum].Position = FVector(0);
+				boneList[PmxBoneNum].Position = FVector3f(0);
 				boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;
 			}
 			//
@@ -537,12 +537,12 @@ namespace MMD4UE4
 
 						if (boneList[i].IKInfo.Link[j].RotLockFlag == 1)
 						{
-							FVector tempVecRot;
+							FVector3f tempVecRot;
 							//
 							memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockMin);
 							FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockMin[0], Buffer, memcopySize);
 							Buffer += memcopySize;
-							tempVecRot = FVector(
+							tempVecRot = FVector3f(
 								boneList[i].IKInfo.Link[j].RotLockMin[0],
 								boneList[i].IKInfo.Link[j].RotLockMin[1],
 								boneList[i].IKInfo.Link[j].RotLockMin[2]
@@ -559,7 +559,7 @@ namespace MMD4UE4
 							memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockMax);
 							FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockMax[0], Buffer, memcopySize);
 							Buffer += memcopySize;
-							tempVecRot = FVector(
+							tempVecRot = FVector3f(
 								boneList[i].IKInfo.Link[j].RotLockMax[0],
 								boneList[i].IKInfo.Link[j].RotLockMax[1],
 								boneList[i].IKInfo.Link[j].RotLockMax[2]

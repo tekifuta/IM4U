@@ -266,7 +266,7 @@
 				CameraNode = FindCamera(Node);
 				if (bCreateUnknownCameras && CameraNode != NULL)
 				{
-					Actor = GEditor->AddActor(InMatineeActor->GetWorld()->GetCurrentLevel(), ACameraActor::StaticClass(), FTransform::Identity);
+					Actor = GEditor->AddActor(InMatineeActor->GetWorld()->GetCurrentLevel(), ACameraActor::StaticClass(), FTransform3f::Identity);
 					Actor->SetActorLabel(ANSI_TO_TCHAR(CameraNode->GetName()));
 				}
 				else
@@ -859,13 +859,13 @@
 			FbxAMatrix FbxCamToUnrealRHMtx, InvFbxCamToUnrealRHMtx;
 			FbxAMatrix UnrealRHToUnrealLH, InUnrealRHToUnrealLH;
 
-			Actor->SetActorLocation(FVector(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
+			Actor->SetActorLocation(FVector3f(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
 
 			bool bIsCamera = false;
 			if (!Node->GetCamera())
 			{
 				Actor->SetActorRotation(
-					FRotator::MakeFromEuler(FVector(DefaultRot[0], -DefaultRot[1], -DefaultRot[2]))
+					FRotator::MakeFromEuler(FVector3f(DefaultRot[0], -DefaultRot[1], -DefaultRot[2]))
 					);
 			}
 			else
@@ -900,7 +900,7 @@
 
 				FbxVector4 UnrealCameraRotationEuler = UnrealCameraRotationMtx.GetR();
 
-				Actor->SetActorRotation(FRotator::MakeFromEuler(FVector(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])));
+				Actor->SetActorRotation(FRotator::MakeFromEuler(FVector3f(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])));
 				bIsCamera = true;
 			}
 #else
@@ -908,10 +908,10 @@
 			bool bIsCamera = true;
 			//vmd 向けに初期位置と回転を取得
 			//その際に座標系変換の計算を行うこと
-			Actor->SetActorLocation(FVector(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
+			Actor->SetActorLocation(FVector3f(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
 			Actor->SetActorRotation(
 				FRotator::MakeFromEuler(
-					FVector(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])
+					FVector3f(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])
 				));
 
 #endif
@@ -961,7 +961,7 @@
 					// Once the individual Euler channels are imported, then convert the rotation into Unreal coords
 					for (int32 PointIndex = 0; PointIndex < MovementTrack->EulerTrack.Points.Num(); ++PointIndex)
 					{
-						FInterpCurvePoint<FVector>& CurveKey = MovementTrack->EulerTrack.Points[PointIndex];
+						FInterpCurvePoint<FVector3f>& CurveKey = MovementTrack->EulerTrack.Points[PointIndex];
 
 						FbxAMatrix CurveMatrix;
 						CurveMatrix.SetR(FbxVector4(CurveKey.OutVal.X, CurveKey.OutVal.Y, CurveKey.OutVal.Z));
@@ -985,11 +985,11 @@
 					float CurrentAngleOffset[3] = { 0.f, 0.f, 0.f };
 					for (int32 PointIndex = 1; PointIndex < MovementTrack->EulerTrack.Points.Num(); ++PointIndex)
 					{
-						const FInterpCurvePoint<FVector>& CurveKeyPrev = MovementTrack->EulerTrack.Points[PointIndex - 1];
-						FInterpCurvePoint<FVector>& CurveKey = MovementTrack->EulerTrack.Points[PointIndex];
+						const FInterpCurvePoint<FVector3f>& CurveKeyPrev = MovementTrack->EulerTrack.Points[PointIndex - 1];
+						FInterpCurvePoint<FVector3f>& CurveKey = MovementTrack->EulerTrack.Points[PointIndex];
 
-						FVector PreviousOutVal = CurveKeyPrev.OutVal;
-						FVector CurrentOutVal = CurveKey.OutVal;
+						FVector3f PreviousOutVal = CurveKeyPrev.OutVal;
+						FVector3f CurrentOutVal = CurveKey.OutVal;
 
 						for (int32 AxisIndex = 0; AxisIndex < 3; ++AxisIndex)
 						{
@@ -1231,7 +1231,7 @@
 			{
 				float Time = (float)RealCurve->KeyGet(KeyIndex).GetTime().GetSecondDouble();
 				// Create the curve keys
-				FInterpCurvePoint<FVector> Key;
+				FInterpCurvePoint<FVector3f> Key;
 				Key.InVal = Time;
 				Key.InterpMode = GetUnrealInterpMode(RealCurve->KeyGet(KeyIndex));
 
@@ -1240,7 +1240,7 @@
 
 			for (KeyIndex = 0; KeyIndex < RealCurve->KeyGetCount(); ++KeyIndex)
 			{
-				FInterpCurvePoint<FVector>& Key = Curve.Points[KeyIndex];
+				FInterpCurvePoint<FVector3f>& Key = Curve.Points[KeyIndex];
 				switch (CurveIndex)
 				{
 				case 0:

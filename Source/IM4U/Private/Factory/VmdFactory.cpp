@@ -27,9 +27,9 @@ void CreateRotationXMatrix(FMatrix *Out, float Angle);
 void MV1LoadModelToVMD_CreateMultiplyMatrixRotOnly(FMatrix *Out, FMatrix *In1, FMatrix *In2);
 // 角度制限を判定する共通関数 (subIndexJdgの判定は割りと不明…)
 void CheckLimitAngle(
-	const FVector& RotMin,
-	const FVector& RotMax,
-	FVector * outAngle, //target angle ( in and out param)
+	const FVector3f& RotMin,
+	const FVector3f& RotMax,
+	FVector3f * outAngle, //target angle ( in and out param)
 	bool subIndexJdg //(ik link index < ik loop temp):: linkBoneIndex < ikt
 	);
 ///////////////////////////////////////////////////////
@@ -767,7 +767,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			//フレーム分同じ値を設定する
 			for (int32 i = 0; i < DestSeq->GetNumberOfFrames(); i++)
 			{
-				FTransform nrmTrnc;
+				FTransform3f nrmTrnc;
 				nrmTrnc.SetIdentity();
 				RawTrack.PosKeys.Add(nrmTrnc.GetTranslation());
 				RawTrack.RotKeys.Add(nrmTrnc.GetRotation());
@@ -799,19 +799,19 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				{
 					if (i == nextKeyFrame)
 					{
-						FTransform tempTranceform(
-							FQuat(
+						FTransform3f tempTranceform(
+							FQuat4f(
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[0],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[2] * (-1),
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[1],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[3]
 							),
-							FVector(
+							FVector3f(
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[0],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[2] * (-1),
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[1]
 							)*10.0f,
-							FVector(1, 1, 1)
+							FVector3f(1, 1, 1)
 							);
 						//リファレンスポーズからKeyのポーズ分移動させた値を初期値とする
 						RawTrack.PosKeys.Add(tempTranceform.GetTranslation());
@@ -830,7 +830,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					{
 						preKeyIndex = nextKeyIndex;
 						//例外処理。初期フレーム(0)にKeyが設定されていない
-						FTransform nrmTrnc;
+						FTransform3f nrmTrnc;
 						nrmTrnc.SetIdentity();
 						RawTrack.PosKeys.Add(nrmTrnc.GetTranslation());
 						RawTrack.RotKeys.Add(nrmTrnc.GetRotation());
@@ -840,9 +840,9 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				else
 				{
 					float blendRate = 1;
-					FTransform NextTranc;
-					FTransform PreTranc;
-					FTransform NowTranc;
+					FTransform3f NextTranc;
+					FTransform3f PreTranc;
+					FTransform3f NowTranc;
 
 					NextTranc.SetIdentity();
 					PreTranc.SetIdentity();
@@ -863,20 +863,20 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						}
 						//pose
 						NextTranc.SetLocation(
-							FVector(
+							FVector3f(
 							NextKey.Position[0],
 							NextKey.Position[2] * (-1),
 							NextKey.Position[1]
 							));
 						PreTranc.SetLocation(
-							FVector(
+							FVector3f(
 							PreKey.Position[0],
 							PreKey.Position[2] * (-1),
 							PreKey.Position[1]
 							));
 
 						NowTranc.SetLocation(
-							FVector(
+							FVector3f(
 							interpolateBezier(
 							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
 							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
@@ -904,14 +904,14 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							);
 						//rot
 						NextTranc.SetRotation(
-							FQuat(
+							FQuat4f(
 							NextKey.Quaternion[0],
 							NextKey.Quaternion[2] * (-1),
 							NextKey.Quaternion[1],
 							NextKey.Quaternion[3]
 							));
 						PreTranc.SetRotation(
-							FQuat(
+							FQuat4f(
 							PreKey.Quaternion[0],
 							PreKey.Quaternion[2] * (-1),
 							PreKey.Quaternion[1],
@@ -920,7 +920,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 #if 0
 						float tempBezR[4];
 						NowTranc.SetRotation(
-							FQuat(
+							FQuat4f(
 							tempBezR[0] = interpolateBezier(
 							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
 							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
@@ -967,7 +967,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							blendRate
 							);
 						NowTranc.SetRotation(
-							FQuat::Slerp(PreTranc.GetRotation(), NextTranc.GetRotation(), bezirT)
+							FQuat4f::Slerp(PreTranc.GetRotation(), NextTranc.GetRotation(), bezirT)
 							);
 						/*UE_LOG(LogMMD4UE4_VMDFactory, Warning,
 							TEXT("interpolateBezier Rot:[%s],F[%d/%d],BLD[%.2f],biz[%.2f]BEZ[%s]"),
@@ -978,13 +978,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					else
 					{
 						NowTranc.SetLocation(
-							FVector(
+							FVector3f(
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[0],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[2] * (-1),
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Position[1]
 							));
 						NowTranc.SetRotation(
-							FQuat(
+							FQuat4f(
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[0],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[2] * (-1),
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[1],
@@ -994,10 +994,10 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						//check(false);
 					}
 
-					FTransform tempTranceform(
+					FTransform3f tempTranceform(
 						NowTranc.GetRotation(),
 						NowTranc.GetTranslation()*10.0f,
-						FVector(1, 1, 1)
+						FVector3f(1, 1, 1)
 						);
 					//リファレンスポーズからKeyのポーズ分移動させた値を初期値とする
 					RawTrack.PosKeys.Add(tempTranceform.GetTranslation());
@@ -1040,8 +1040,8 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 
 	//全フレームに対し事前に各ボーンの座標を計算しRawTrackに追加する＠必須
 	//TBD::多分バグがあるはず…
-	FTransform subLocRef;
-	FTransform tempLoc;
+	FTransform3f subLocRef;
+	FTransform3f tempLoc;
 	TArray<FRawAnimSequenceTrack> ImportRawTrackList;
 	ImportRawTrackList.AddZeroed(NumBones);
 	GWarn->BeginSlowTask(LOCTEXT("BeginImportAnimation", "Importing Animation"), true);
@@ -1078,7 +1078,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			{
 				//移動後の位置 = 元の位置 + 平行移動
 				//移動後の回転 = 回転
-				RawTrack.PosKeys.Add(LocalRawTrack.PosKeys[k] + RefBonePose[BoneIndex].GetTranslation());
+				RawTrack.PosKeys.Add(LocalRawTrack.PosKeys[k] + (FVector3f)RefBonePose[BoneIndex].GetTranslation());
 				RawTrack.RotKeys.Add(LocalRawTrack.RotKeys[k]);
 				RawTrack.ScaleKeys.Add(LocalRawTrack.ScaleKeys[k]);
 			}
@@ -1207,16 +1207,16 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				int32 ilLinklistNum = mmdExtend->IkInfoList[ikTargetIndex].ikLinkList.Num();
 				//TBD::もっと良い方があれば検討(Loc→Glbに再計算している為、計算コストが高すぎると推測)
 				//ここで事前にIK対象のGlb座標等を計算しておく
-				FTransform tempGlbIkBoneTrsf;
-				FTransform tempGlbTargetBoneTrsf;
-				TArray<FTransform> tempGlbIkLinkTrsfList;
+				FTransform3f tempGlbIkBoneTrsf;
+				FTransform3f tempGlbTargetBoneTrsf;
+				TArray<FTransform3f> tempGlbIkLinkTrsfList;
 				//get glb trsf
 				/*DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].IKBoneIndex].PosKeys[k]
 					= RefBonePose[mmdExtend->IkInfoList[ikTargetIndex].IKBoneIndex].GetTranslation();
 				DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].IKBoneIndex].RotKeys[k]
 					= RefBonePose[mmdExtend->IkInfoList[ikTargetIndex].IKBoneIndex].GetRotation();
 				DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].IKBoneIndex].ScaleKeys[k]
-					= FVector(1);*/
+					= FVector3f(1);*/
 				tempGlbIkBoneTrsf = CalcGlbTransformFromBoneIndex(
 					DestSeq,
 					Skeleton,
@@ -1228,7 +1228,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].TargetBoneIndex].RotKeys[k]
 					= RefBonePose[mmdExtend->IkInfoList[ikTargetIndex].TargetBoneIndex].GetRotation();
 				DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].TargetBoneIndex].ScaleKeys[k]
-					= FVector(1);*/
+					= FVector3f(1);*/
 				tempGlbTargetBoneTrsf = CalcGlbTransformFromBoneIndex(
 					DestSeq,
 					Skeleton,
@@ -1243,7 +1243,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[glbIndx].BoneIndex].RotKeys[k]
 						= RefBonePose[mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[glbIndx].BoneIndex].GetRotation();
 					DestSeq->RawAnimationData[mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[glbIndx].BoneIndex].ScaleKeys[k]
-						= FVector(1);*/
+						= FVector3f(1);*/
 					tempGlbIkLinkTrsfList[glbIndx] = CalcGlbTransformFromBoneIndex(
 						DestSeq,
 						Skeleton,
@@ -1253,13 +1253,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				}
 				//execute 
 				//
-				FTransform tempCalcIKTrns;
+				FTransform3f tempCalcIKTrns;
 				tempCalcIKTrns.SetIdentity();
 				//
-				FVector vecToIKTargetPose;
-				FVector vecToIKLinkPose;
-				FVector asix;
-				FQuat	qt;
+				FVector3f vecToIKTargetPose;
+				FVector3f vecToIKLinkPose;
+				FVector3f asix;
+				FQuat4f	qt;
 				float	angle = 0;
 				int32	rawIndex = 0;
 				int32	ikt = loopMax / 2;
@@ -1280,7 +1280,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							= tempGlbIkBoneTrsf.GetTranslation() - tempGlbIkLinkTrsfList[linkBoneIndex].GetTranslation();
 
 						// 2つのベクトルの外積（上軸）を算出 
-						asix = FVector::CrossProduct(vecToIKTargetPose, vecToIKLinkPose);
+						asix = FVector3f::CrossProduct(vecToIKTargetPose, vecToIKLinkPose);
 						// 軸の数値が正常で、2つのベクトルの向きが不一致の場合（ベクトルの向きが同じ場合、外積は0になる）
 						if (asix.SizeSquared()>0)
 						{
@@ -1289,26 +1289,26 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							vecToIKTargetPose.Normalize();
 							vecToIKLinkPose.Normalize();
 							// 2つのベクトルの内積を計算して、ベクトル間のラジアン角度を算出 
-							angle = FMath::Acos(FMath::Clamp<float>( FVector::DotProduct(vecToIKTargetPose, vecToIKLinkPose),-1,1));
-							//angle = FVector::DotProduct(vecToIKTargetPose, vecToIKLinkPose);
+							angle = FMath::Acos(FMath::Clamp<float>( FVector3f::DotProduct(vecToIKTargetPose, vecToIKLinkPose),-1,1));
+							//angle = FVector3f::DotProduct(vecToIKTargetPose, vecToIKLinkPose);
 							float RotLimitRad = FMath::DegreesToRadians(mmdExtend->IkInfoList[ikTargetIndex].RotLimit);
 							if (angle > RotLimitRad)
 							{
 								angle = RotLimitRad;
 							}
 							// 任意軸回転クォータニオンを作成  
-							qt = FQuat(asix, angle);
+							qt = FQuat4f(asix, angle);
 							// 変換行列に合成 
 							tempCalcIKTrns.SetIdentity();
 							//tempCalcIKTrns.SetTranslation(DestSeq->RawAnimationData[rawIndex].PosKeys[k]);
 							tempCalcIKTrns.SetRotation(DestSeq->RawAnimationData[rawIndex].RotKeys[k]);
-							tempCalcIKTrns *= FTransform(qt);
+							tempCalcIKTrns *= FTransform3f(qt);
 
 							//軸制限計算
 							if (mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[linkBoneIndex].RotLockFlag == 1)
 							{
-								FVector eulerVec = tempCalcIKTrns.GetRotation().Euler();
-								FVector subEulerAngleVec = eulerVec;
+								FVector3f eulerVec = tempCalcIKTrns.GetRotation().Euler();
+								FVector3f subEulerAngleVec = eulerVec;
 
 								subEulerAngleVec = ClampVector(
 									subEulerAngleVec,
@@ -1317,7 +1317,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 									);
 								subEulerAngleVec -= eulerVec;
 								//回転軸制限補正
-								tempCalcIKTrns *= FTransform(FQuat::MakeFromEuler(subEulerAngleVec));
+								tempCalcIKTrns *= FTransform3f(FQuat4f::MakeFromEuler(subEulerAngleVec));
 							}
 							//CCD-IK後の回転軸更新
 							DestSeq->RawAnimationData[rawIndex].RotKeys[k]
@@ -1376,7 +1376,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						vecToIKTargetPose.Normalize();
 						vecToIKLinkPose.Normalize();
 
-						FVector v1, v2;
+						FVector3f v1, v2;
 						v1 = vecToIKTargetPose;
 						v2 = vecToIKLinkPose;
 						if ((v1.X - v2.X) * (v1.X - v2.X)
@@ -1384,12 +1384,12 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							+ (v1.Z - v2.Z) * (v1.Z - v2.Z) 
 							< 0.0000001f) break;
 
-						FVector v;
-						v = FVector::CrossProduct(v1, v2);
+						FVector3f v;
+						v = FVector3f::CrossProduct(v1, v2);
 						// calculate roll axis
 						//親計算：無駄計算を省きたいがうまい方法が見つからないので保留
-						FVector ChainParentBone_Asix;
-						FTransform tempGlbChainParentBoneTrsf = CalcGlbTransformFromBoneIndex(
+						FVector3f ChainParentBone_Asix;
+						FTransform3f tempGlbChainParentBoneTrsf = CalcGlbTransformFromBoneIndex(
 							DestSeq,
 							Skeleton,
 							Skeleton->GetReferenceSkeleton().GetParentIndex(IKBaseLinkPtr->BoneIndex),//parent
@@ -1401,7 +1401,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								&& IKBaseLinkPtr->RotLockMin.Z == 0 && IKBaseLinkPtr->RotLockMax.Z == 0)
 							{
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::X);
-								float vvx = FVector::DotProduct(v, ChainParentBone_Asix);
+								float vvx = FVector3f::DotProduct(v, ChainParentBone_Asix);
 								v.X = vvx >= 0.0f ? 1.0f : -1.0f;
 								v.Y = 0.0f;
 								v.Z = 0.0f;
@@ -1410,7 +1410,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								&& IKBaseLinkPtr->RotLockMin.Z == 0 && IKBaseLinkPtr->RotLockMax.Z == 0)
 							{
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Y);
-								float vvy = FVector::DotProduct(v, ChainParentBone_Asix);
+								float vvy = FVector3f::DotProduct(v, ChainParentBone_Asix);
 								v.Y = vvy >= 0.0f ? 1.0f : -1.0f;
 								v.X = 0.0f;
 								v.Z = 0.0f;
@@ -1419,7 +1419,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								&& IKBaseLinkPtr->RotLockMin.Y == 0 && IKBaseLinkPtr->RotLockMax.Y == 0)
 							{
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Z);
-								float vvz = FVector::DotProduct(v, ChainParentBone_Asix);
+								float vvz = FVector3f::DotProduct(v, ChainParentBone_Asix);
 								v.Z = vvz >= 0.0f ? 1.0f : -1.0f;
 								v.X = 0.0f;
 								v.Y = 0.0f;
@@ -1427,14 +1427,14 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							else
 							{
 								// calculate roll axis
-								FVector vv;
+								FVector3f vv;
 
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::X);
-								vv.X = FVector::DotProduct(v, ChainParentBone_Asix);
+								vv.X = FVector3f::DotProduct(v, ChainParentBone_Asix);
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Y);
-								vv.Y = FVector::DotProduct(v, ChainParentBone_Asix);
+								vv.Y = FVector3f::DotProduct(v, ChainParentBone_Asix);
 								ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Z);
-								vv.Z = FVector::DotProduct(v, ChainParentBone_Asix);
+								vv.Z = FVector3f::DotProduct(v, ChainParentBone_Asix);
 
 								v = vv;
 								v.Normalize();
@@ -1443,14 +1443,14 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						else
 						{
 							// calculate roll axis
-							FVector vv;
+							FVector3f vv;
 
 							ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::X);
-							vv.X = FVector::DotProduct(v, ChainParentBone_Asix);
+							vv.X = FVector3f::DotProduct(v, ChainParentBone_Asix);
 							ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Y);
-							vv.Y = FVector::DotProduct(v, ChainParentBone_Asix);
+							vv.Y = FVector3f::DotProduct(v, ChainParentBone_Asix);
 							ChainParentBone_Asix = tempGlbChainParentBoneTrsf.GetUnitAxis(EAxis::Z);
-							vv.Z = FVector::DotProduct(v, ChainParentBone_Asix);
+							vv.Z = FVector3f::DotProduct(v, ChainParentBone_Asix);
 
 							v = vv;
 							v.Normalize();
@@ -1458,14 +1458,14 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 
 
 						// calculate roll angle of [k]th bone(limited by p_IK[i].dlimit*(k+1)*2)
-						float Cos = FVector::DotProduct(v1,v2);
+						float Cos = FVector3f::DotProduct(v1,v2);
 						if (Cos >  1.0f) Cos = 1.0f;
 						if (Cos < -1.0f) Cos = -1.0f;
 
 						float Rot = 0.5f * FMath::Acos(Cos);
 						float RotLimitRad = FMath::DegreesToRadians(mmdExtend->IkInfoList[ikTargetIndex].RotLimit);
-						FVector RotLockMinRad = IKBaseLinkPtr->RotLockMin * FMath::DegreesToRadians(1);
-						FVector RotLockMaxRad = IKBaseLinkPtr->RotLockMax * FMath::DegreesToRadians(1);
+						FVector3f RotLockMinRad = IKBaseLinkPtr->RotLockMin * FMath::DegreesToRadians(1);
+						FVector3f RotLockMaxRad = IKBaseLinkPtr->RotLockMax * FMath::DegreesToRadians(1);
 						//TBD::単位角度の制限確認(ただし、処理があっているか不明…）
 						if (Rot > RotLimitRad * (linkBoneIndex + 1) * 2)
 						{
@@ -1475,17 +1475,17 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						float IKsin, IKcos;
 						IKsin = FMath::Sin(Rot);
 						IKcos = FMath::Cos(Rot);
-						FQuat qIK(
+						FQuat4f qIK(
 							v.X * IKsin,
 							v.Y * IKsin,
 							v.Z * IKsin,
 							IKcos
 							);	*/
 						//UE4版：軸と角度からQuar作成
-						FQuat qIK(v, Rot);
+						FQuat4f qIK(v, Rot);
 
 						//chainBone ik quatがGlbかLocかIKのみか不明。・・暫定
-						FQuat ChainBone_IKQuat = tempGlbIkBoneTrsf.GetRotation();
+						FQuat4f ChainBone_IKQuat = tempGlbIkBoneTrsf.GetRotation();
 						ChainBone_IKQuat = qIK * ChainBone_IKQuat ;
 						tempGlbIkBoneTrsf.SetRotation(ChainBone_IKQuat);
 
@@ -1523,7 +1523,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								float fZ = FMath::Atan2(fSZ, fCZ);
 
 								// 角度の制限
-								FVector fixRotAngleVec(fX,fY,fZ);
+								FVector3f fixRotAngleVec(fX,fY,fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
 									RotLockMaxRad,
@@ -1567,7 +1567,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								float fZ = FMath::Atan2(fSZ, fCZ);	// Z軸回り決定
 
 								// 角度の制限
-								FVector fixRotAngleVec(fX, fY, fZ);
+								FVector3f fixRotAngleVec(fX, fY, fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
 									RotLockMaxRad,
@@ -1612,7 +1612,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 								float fY = FMath::Atan2(fSY, fCY);	// Z軸回り決定
 								
 								// 角度の制限
-								FVector fixRotAngleVec(fX, fY, fZ);
+								FVector3f fixRotAngleVec(fX, fY, fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
 									RotLockMaxRad,
@@ -1632,7 +1632,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							}
 							//QuatConvertFromMatrix(ChainBone->IKQuat, ChainBone->IKmat);
 							tempGlbIkBoneTrsf.SetFromMatrix(ChainBone_IKmat);
-							tempGlbIkBoneTrsf.SetScale3D(FVector(1));//reset scale
+							tempGlbIkBoneTrsf.SetScale3D(FVector3f(1));//reset scale
 							DestSeq->RawAnimationData[rawIndex].RotKeys[k]
 								= tempGlbIkBoneTrsf.GetRotation();
 #if 0
@@ -1718,15 +1718,15 @@ void MV1LoadModelToVMD_CreateMultiplyMatrixRotOnly(FMatrix *Out, FMatrix *In1, F
 /////////////////////////////////////
 // 角度制限を判定する共通関数 (subIndexJdgの判定は割りと不明…)
 void CheckLimitAngle(
-	const FVector& RotMin,
-	const FVector& RotMax,
-	FVector * outAngle, //target angle ( in and out param)
+	const FVector3f& RotMin,
+	const FVector3f& RotMax,
+	FVector3f * outAngle, //target angle ( in and out param)
 	bool subIndexJdg //(ik link index < ik loop temp):: linkBoneIndex < ikt
 	)
 {
 //#define DEBUG_CheckLimitAngle
 #ifdef DEBUG_CheckLimitAngle
-	FVector debugVec = *outAngle;
+	FVector3f debugVec = *outAngle;
 #endif
 #if 0
 	if (outAngle->X < RotMin.X)
@@ -1841,7 +1841,7 @@ int32 UVmdFactory::FindRefBoneInfoIndexFromBoneName(
 * Return :trncform
 * @param :TargetName is Target Bone Name
 ****************/
-FTransform UVmdFactory::CalcGlbTransformFromBoneIndex(
+FTransform3f UVmdFactory::CalcGlbTransformFromBoneIndex(
 	UAnimSequence* DestSeq,
 	USkeleton* Skeleton,
 	int32 BoneIndex,
@@ -1851,9 +1851,9 @@ FTransform UVmdFactory::CalcGlbTransformFromBoneIndex(
 	if (DestSeq == NULL || Skeleton == NULL || BoneIndex < 0 || keyIndex < 0)
 	{
 		//error root
-		return FTransform::Identity;
+		return FTransform3f::Identity;
 	}
-	FTransform resultTrans(
+	FTransform3f resultTrans(
 		DestSeq->GetRawAnimationData()[BoneIndex].RotKeys[keyIndex],
 		DestSeq->GetRawAnimationData()[BoneIndex].PosKeys[keyIndex],
 		DestSeq->GetRawAnimationData()[BoneIndex].ScaleKeys[keyIndex]

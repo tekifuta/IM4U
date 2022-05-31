@@ -6,11 +6,11 @@
 
 namespace MMD4UE4
 {
-	FVector MMDImportHelper::ConvertVectorAsixToUE4FromMMD(
-		FVector vec
+	FVector3f MMDImportHelper::ConvertVectorAsixToUE4FromMMD(
+		FVector3f vec
 		)
 	{
-		FVector temp;
+		FVector3f temp;
 		temp.Y = vec.Z*(-1);
 		temp.X = vec.X*(1);
 		temp.Z = vec.Y*(1);

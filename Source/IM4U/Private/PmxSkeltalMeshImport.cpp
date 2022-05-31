@@ -58,14 +58,14 @@ class FMorphMeshRawSource
 public:
 	struct FMorphMeshVertexRaw
 	{
-		FVector			Position;
+		FVector3f			Position;
 
 		// Tangent, U-direction
-		FVector			TangentX;
+		FVector3f			TangentX;
 		// Binormal, V-direction
-		FVector			TangentY;
+		FVector3f			TangentY;
 		// Normal
-		FVector4		TangentZ;
+		FVector4f		TangentZ;
 	};
 
 	/** vertex data used for comparisons */
@@ -142,12 +142,13 @@ void FMorphMeshRawSource::Initialize(FSkeletalMeshLODModel& LODModel)
 	}
 
 	// copy the wedge point indices
-	if (LODModel.RawPointIndices.GetBulkDataSize())
+	if (LODModel.GetRawPointIndices().Num())
 	{
-		WedgePointIndices.Empty(LODModel.RawPointIndices.GetElementCount());
-		WedgePointIndices.AddUninitialized(LODModel.RawPointIndices.GetElementCount());
-		FMemory::Memcpy(WedgePointIndices.GetData(), LODModel.RawPointIndices.Lock(LOCK_READ_ONLY), LODModel.RawPointIndices.GetBulkDataSize());
-		LODModel.RawPointIndices.Unlock();
+		//WedgePointIndices.Empty(LODModel.GetRawPointIndices().Num());
+		//WedgePointIndices.AddUninitialized(LODModel.GetRawPointIndices().Num());		
+		//FMemory::Memcpy(WedgePointIndices.GetData(), LODModel.GetRawPointIndices().Lock(LOCK_READ_ONLY), LODModel.GetRawPointIndices().GetBulkDataSize());
+		//LODModel.GetRawPointIndices().Unlock();
+		WedgePointIndices = LODModel.GetRawPointIndices();
 	}
 }
 
@@ -204,8 +205,8 @@ void FMorphMeshRawSource::CalculateMorphTargetLODModel(const FMorphMeshRawSource
 					const FMorphMeshVertexRaw& VTarget = TargetSource.Vertices[*TargetVertIdx];
 
 					// change in position from base to target
-					FVector PositionDelta(VTarget.Position - VBase.Position);
-					FVector NormalDeltaZ(VTarget.TangentZ - VBase.TangentZ);
+					FVector3f PositionDelta(VTarget.Position - VBase.Position);
+					FVector3f NormalDeltaZ(VTarget.TangentZ - VBase.TangentZ);
 
 					// check if position actually changed much
 					if (PositionDelta.SizeSquared() > FMath::Square(THRESH_POINTS_ARE_NEAR) ||
@@ -580,7 +581,7 @@ bool UPmxFactory::ImportBone(
 		JointMatrix.Transform.SetScale3D(Converter.ConvertScale(LocalLinkS));
 		*/
 		//test MMD , not rot asix and LocalAsix
-		FVector TransTemp;
+		FVector3f TransTemp;
 		if (ParentIndex != INDEX_NONE)
 		{
 			TransTemp = PmxMeshInfo->boneList[ParentIndex].Position
@@ -593,8 +594,8 @@ bool UPmxFactory::ImportBone(
 		}
 		//TransTemp *= 10;
 		JointMatrix.Transform.SetTranslation(TransTemp);
-		JointMatrix.Transform.SetRotation(FQuat(0,0,0,1.0));
-		JointMatrix.Transform.SetScale3D(FVector(1));
+		JointMatrix.Transform.SetRotation(FQuat4f(0,0,0,1.0));
+		JointMatrix.Transform.SetScale3D(FVector3f(1));
 	}
 	/*
 	if (TemplateData)
@@ -604,7 +605,7 @@ bool UPmxFactory::ImportBone(
 		FMatrix AddedMatrix = Converter.ConvertMatrix(FbxAddedMatrix);
 
 		VBone& RootBone = ImportData.RefBonesBinary[RootIdx];
-		FTransform& RootTransform = RootBone.BonePos.Transform;
+		FTransform3f& RootTransform = RootBone.BonePos.Transform;
 		RootTransform.SetFromMatrix(RootTransform.ToMatrixWithScale() * AddedMatrix);
 	}
 
@@ -1158,11 +1159,11 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 				int32 NormalIndex = UnrealVertexIndex;
 				//for (NormalIndex = 0; NormalIndex < 3; ++NormalIndex)
 				{
-					FVector TangentZ 
+					FVector3f TangentZ 
 						= PmxMeshInfo->vertexList[PmxMeshInfo->faseList[LocalIndex].VertexIndex[NormalIndex]].Normal;
 
-					Triangle.TangentX[NormalIndex] = FVector::ZeroVector;
-					Triangle.TangentY[NormalIndex] = FVector::ZeroVector;
+					Triangle.TangentX[NormalIndex] = FVector3f::ZeroVector;
+					Triangle.TangentY[NormalIndex] = FVector3f::ZeroVector;
 					Triangle.TangentZ[NormalIndex] = TangentZ.GetSafeNormal();
 				}
 			}
@@ -1171,9 +1172,9 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 				int32 NormalIndex;
 				for (NormalIndex = 0; NormalIndex < 3; ++NormalIndex)
 				{
-					Triangle.TangentX[NormalIndex] = FVector::ZeroVector;
-					Triangle.TangentY[NormalIndex] = FVector::ZeroVector;
-					Triangle.TangentZ[NormalIndex] = FVector::ZeroVector;
+					Triangle.TangentX[NormalIndex] = FVector3f::ZeroVector;
+					Triangle.TangentY[NormalIndex] = FVector3f::ZeroVector;
+					Triangle.TangentZ[NormalIndex] = FVector3f::ZeroVector;
 				}
 			}
 		}
@@ -1356,7 +1357,7 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 			ImportData.Wedges[w].Color = TmpWedges[VertexIndex].Color;
 			ImportData.Wedges[w].Reserved = 0;
 
-			FVector2D tempUV 
+			FVector2f tempUV 
 				= PmxMeshInfo->vertexList[TmpWedges[VertexIndex].VertexIndex].UV;
 			TmpWedges[VertexIndex].UVs[0].X = tempUV.X;
 			TmpWedges[VertexIndex].UVs[0].Y = tempUV.Y;
@@ -1626,7 +1627,7 @@ public:
 
 	void DoWork()
 	{
-		TArray<FVector> LODPoints;
+		TArray<FVector3f> LODPoints;
 		TArray<SkeletalMeshImportData::FMeshWedge> LODWedges;
 		TArray<SkeletalMeshImportData::FMeshFace> LODFaces;
 		TArray<SkeletalMeshImportData::FVertInfluence> LODInfluences;
@@ -1860,7 +1861,7 @@ void UPmxFactory::ImportMorphTargetsInternal(
 		if (Result)
 		{
 			//Test
-			//PmxMeshInfo.vertexList[0].Position = FVector::ZeroVector;
+			//PmxMeshInfo.vertexList[0].Position = FVector3f::ZeroVector;
 
 			// now we get a shape for whole mesh, import to unreal as a morph target
 			// @todo AssetImportData do we need import data for this temp mesh?

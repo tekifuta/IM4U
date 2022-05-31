@@ -128,7 +128,7 @@ class IM4U_API UVmdFactory : public UFactory
 	* Return :trncform
 	* @param :TargetName is Target Bone Name
 	****************/
-	FTransform CalcGlbTransformFromBoneIndex(
+	FTransform3f CalcGlbTransformFromBoneIndex(
 		UAnimSequence* DestSeq,
 		USkeleton* Skeleton,
 		int32 BoneIndex,

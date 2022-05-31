@@ -38,18 +38,16 @@ namespace UnrealBuildTool.Rules
 			}
 
 			string LibName;
-			if ((Target.Platform == UnrealTargetPlatform.Win64 ||
-				 Target.Platform == UnrealTargetPlatform.Win32)
-				 && FoundLibEHWinDirs)
+			if (FoundLibEHWinDirs)
 			{
-				if (Target.Platform == UnrealTargetPlatform.Win64)
-				{
+				//if (Target.Platform == UnrealTargetPlatform.Win64)
+				//{
 					LibName = "LibEncodeHelperWin64";
-				}
-				else
-				{
-					LibName = "LibEncodeHelperWin32";
-				}
+				//}
+				//else
+				//{
+				//	LibName = "LibEncodeHelperWin32";
+				//}
 
 				bool HaveDebugLib = File.Exists(LibEHWinLibPath + LibName + "D" + ".dll");
 
@@ -100,7 +98,8 @@ namespace UnrealBuildTool.Rules
                     "RHI",
                     "RenderCore",
                     "ContentBrowser",
-					"SkeletalMeshUtilitiesCommon"
+					"SkeletalMeshUtilitiesCommon",
+					"PhysicsUtilities"
 					// ... add other public dependencies that you statically link with here ...
 				}
 				);

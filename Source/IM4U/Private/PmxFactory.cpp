@@ -37,7 +37,7 @@
 #include "ComponentReregisterContext.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
-#include "Editor/UnrealEd/Public/PhysicsAssetUtils.h"
+#include "PhysicsAssetUtils.h"
 ////////////
 
 #include "LODUtilities.h"
@@ -829,7 +829,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	// Create initial bounding box based on expanded version of reference pose for meshes without physics assets. Can be overridden by artist.
 	FBox BoundingBox(SkelMeshImportDataPtr->Points.GetData(), SkelMeshImportDataPtr->Points.Num());
 	FBox Temp = BoundingBox;
-	FVector MidMesh = 0.5f*(Temp.Min + Temp.Max);
+	FVector3f MidMesh = 0.5f*(Temp.Min + Temp.Max);
 	BoundingBox.Min = Temp.Min + 1.0f*(Temp.Min - MidMesh);
 	BoundingBox.Max = Temp.Max + 1.0f*(Temp.Max - MidMesh);
 	// Tuck up the bottom as this rarely extends lower than a reference pose's (e.g. having its feet on the floor).
@@ -849,7 +849,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	if (bCreateRenderData)
 	{
-		TArray<FVector> LODPoints;
+		TArray<FVector3f> LODPoints;
 		TArray<FMeshWedge> LODWedges;
 		TArray<FMeshFace> LODFaces;
 		TArray<FVertInfluence> LODInfluences;
@@ -1199,9 +1199,9 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	NewLODInfo.LODHysteresis = 0.02f;
 
 	// Create initial bounding box based on expanded version of reference pose for meshes without physics assets. Can be overridden by artist.
-	FBox BoundingBox(SkelMeshImportDataPtr->Points.GetData(), SkelMeshImportDataPtr->Points.Num());
-	FBox Temp = BoundingBox;
-	FVector MidMesh = 0.5f*(Temp.Min + Temp.Max);
+	FBox3f BoundingBox(SkelMeshImportDataPtr->Points.GetData(), SkelMeshImportDataPtr->Points.Num());
+	FBox3f Temp = BoundingBox;
+	FVector3f MidMesh = 0.5f*(Temp.Min + Temp.Max);
 	BoundingBox.Min = Temp.Min + 1.0f*(Temp.Min - MidMesh);
 	BoundingBox.Max = Temp.Max + 1.0f*(Temp.Max - MidMesh);
 	// Tuck up the bottom as this rarely extends lower than a reference pose's (e.g. having its feet on the floor).
@@ -1212,7 +1212,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 #if 0 /* under ~ UE4.11 */
 	SkeletalMesh->Bounds = FBoxSphereBounds(BoundingBox);
 #else /* over UE4.12 ~*/
-	SkeletalMesh->SetImportedBounds( FBoxSphereBounds(BoundingBox) );
+	SkeletalMesh->SetImportedBounds( FBoxSphereBounds((FBox)BoundingBox) );
 #endif
 
 	// Store whether or not this mesh has vertex colors
@@ -1226,7 +1226,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 #if 1
 	if (bCreateRenderData)
 	{
-		TArray<FVector> LODPoints;
+		TArray<FVector3f> LODPoints;
 		TArray<SkeletalMeshImportData::FMeshWedge> LODWedges;
 		TArray<SkeletalMeshImportData::FMeshFace> LODFaces;
 		TArray<SkeletalMeshImportData::FVertInfluence> LODInfluences;
@@ -1347,7 +1347,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 				{
 					FPhysAssetCreateParams NewBodyData;
 					FText CreationErrorMessage;
-					bool bSuccess
+					bool bSuccess 
 						= FPhysicsAssetUtils::CreateFromSkeletalMesh(
 								NewPhysicsAsset, 
 								SkeletalMesh, 

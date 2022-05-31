@@ -23,7 +23,7 @@ enum EPMXImportType
 	PMXIT_MAX,
 };
 
-UCLASS(config = EditorUserSettings, AutoExpandCategories = (FTransform), HideCategories = Object, MinimalAPI)
+UCLASS(config = EditorUserSettings, AutoExpandCategories = (FTransform3f), HideCategories = Object, MinimalAPI)
 class UPmxImportUI : public UObject
 {
 	GENERATED_UCLASS_BODY()

@@ -30,8 +30,8 @@ namespace MMD4UE4
 		// param  : vec , in vector
 		// return : convert vec ,out
 		//////////////////////////////////////
-		FVector ConvertVectorAsixToUE4FromMMD(
-			FVector vec
+		FVector3f ConvertVectorAsixToUE4FromMMD(
+			FVector3f vec
 			);
 		//////////////////////////////////////
 		// from PMX Binary Buffer To String @ TextBuf

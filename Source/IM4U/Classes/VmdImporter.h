@@ -247,7 +247,7 @@ namespace MMD4UE4
 struct VMDImportOptions
 {
 	// General options
-	FVector ImportTranslation;
+	FVector3f ImportTranslation;
 	FRotator ImportRotation;
 	float ImportUniformScale;
 	//EMMDNormalImportMethod NormalImportMethod;

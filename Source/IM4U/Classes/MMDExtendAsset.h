@@ -34,10 +34,10 @@ struct FMMD_IKLINK
 	uint32	RotLockFlag:1;						// 回転制限( 0:OFF 1:ON )
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] min"))
-	FVector	RotLockMin;							// 回転制限、下限[x,y,z]
+	FVector3f	RotLockMin;							// 回転制限、下限[x,y,z]
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] max"))
-	FVector	RotLockMax;							// 回転制限、上限[x,y,z]
+	FVector3f	RotLockMax;							// 回転制限、上限[x,y,z]
 
 	FMMD_IKLINK()
 	{

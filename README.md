@@ -20,7 +20,7 @@ This software is released under the MIT License.
 
 This repository is public and doesn't requires a GitHub account with access to Unreal Engine 4 source code to see it. You can add this repository as a git submodule directly into your Unreal Engine 4 project plugins folder.
 
-Latest Unreal Engine 4 version tested: **4.27.2**,Import Material and VMD has Problem.
+Latest Unreal Engine 5 version tested: **5.0.1**,Import Material and VMD has Problem.
 
 # Get Start
 1. Get the entire IM4U plug-in source from GitHub

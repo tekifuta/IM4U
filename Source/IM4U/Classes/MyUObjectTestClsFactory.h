@@ -62,7 +62,7 @@ class UMyUObjectTestClsFactory : public UFactory
 		UStaticMesh* StaticMesh, 
 		//TArray<FFbxMaterial>& MeshMaterials,
 		int LODIndex,
-		TMap<FVector, FColor>* ExistingVertexColorData
+		TMap<FVector3f, FColor>* ExistingVertexColorData
 		);
 #endif
 
@@ -80,8 +80,8 @@ class UMyUObjectTestClsFactory : public UFactory
 		);
 
 	inline bool FVerticesEqual(
-		FVector& V1, 
-		FVector& V2
+		FVector3f& V1, 
+		FVector3f& V2
 		);
 
 	void GetBrushMesh(
@@ -109,7 +109,7 @@ class UMyUObjectTestClsFactory : public UFactory
 		const FString& InStaticMeshPackageName,
 		//TArray<ABrush*>& InBrushesToConvert, 
 		MMD4UE4::PmxMeshInfo *pmxMeshInfoPtr,
-		const FVector& InPivotLocation,
+		const FVector3f& InPivotLocation,
 		TArray<UMaterialInterface*>& Materials
 		);
 	///////////////////////////////////////

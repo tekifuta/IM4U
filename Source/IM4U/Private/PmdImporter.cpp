@@ -544,7 +544,7 @@ namespace MMD4UE4
 			{
 				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = TEXT("Root");
 				pmxMeshInfoPtr->boneList[PmxBoneNum].NameEng = "AllTopRootBone";
-				pmxMeshInfoPtr->boneList[PmxBoneNum].Position = FVector(0);
+				pmxMeshInfoPtr->boneList[PmxBoneNum].Position = FVector3f(0);
 				pmxMeshInfoPtr->boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;
 			}
 			PmxBoneNum = boneData.Count;
@@ -801,7 +801,7 @@ namespace MMD4UE4
 
 				// モーフ情報の読み込み
 				int32 PmxSkinNum = 0;
-				FVector tempVec;
+				FVector3f tempVec;
 				for (i = 0; i < PmxMorphNum; i++)
 				{
 					// target morph ptr 参照

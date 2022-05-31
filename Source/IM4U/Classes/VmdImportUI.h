@@ -19,7 +19,7 @@ enum EVMDImportType
 	VMDIT_MAX,
 };
 
-UCLASS(config = EditorUserSettings, AutoExpandCategories = (FTransform), HideCategories = Object, MinimalAPI)
+UCLASS(config = EditorUserSettings, AutoExpandCategories = (FTransform3f), HideCategories = Object, MinimalAPI)
 class UVmdImportUI : public UObject
 {
 	GENERATED_UCLASS_BODY()

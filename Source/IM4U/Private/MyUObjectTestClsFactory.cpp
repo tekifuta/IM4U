@@ -186,7 +186,7 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 			= "";
 			// = ("/Game/SM_");
 		InStaticMeshPackageName += PmxMeshInfo.modelNameJP;
-		FVector InPivotLocation;
+		FVector3f InPivotLocation;
 		ConvertBrushesToStaticMesh(
 			InParent,
 			InStaticMeshPackageName,
@@ -290,7 +290,7 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 			= "";
 			// = ("/Game/SM_");
 		InStaticMeshPackageName += pmxMeshInfoPtr.modelNameJP;
-		FVector InPivotLocation;
+		FVector3f InPivotLocation;
 		ConvertBrushesToStaticMesh(
 			InParent,
 			InStaticMeshPackageName,
@@ -425,7 +425,7 @@ UStaticMesh* UMyUObjectTestClsFactory::ImportStaticMeshAsSingle(
 	UObject* ExistingObject = NULL;
 
 	// A mapping of vertex positions to their color in the existing static mesh
-	TMap<FVector, FColor>		ExistingVertexColorData;
+	TMap<FVector3f, FColor>		ExistingVertexColorData;
 	// If we should get vertex colors. Defaults to the checkbox value available to the user in the import property window
 	bool bGetVertexColors = false;// ImportOptions->bReplaceVertexColors;
 	FString NewPackageName;
@@ -809,7 +809,7 @@ UStaticMesh* UMyUObjectTestClsFactory::ImportStaticMeshAsSingle(
 			AggGeom.ConvexElems.Empty(1);	//if no custom collision is setup we just regenerate collision when reimport
 
 			const int32 NumDirs = 18;
-			TArray<FVector> Dirs;
+			TArray<FVector3f> Dirs;
 			Dirs.AddUninitialized(NumDirs);
 			for (int32 DirIdx = 0; DirIdx < NumDirs; ++DirIdx) { Dirs[DirIdx] = KDopDir18[DirIdx]; }
 			GenerateKDopAsSimpleCollision(StaticMesh, Dirs);
@@ -828,7 +828,7 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 	UStaticMesh* StaticMesh,
 	//TArray<FFbxMaterial>& MeshMaterials,
 	int LODIndex,
-	TMap<FVector, FColor>* ExistingVertexColorData) 
+	TMap<FVector3f, FColor>* ExistingVertexColorData) 
 {
 	/*
 	check(StaticMesh->SourceModels.IsValidIndex(LODIndex));
@@ -1146,7 +1146,7 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 		StaticMesh->CreateBodySetup();
 
 		const int32 NumDirs = 18;
-		TArray<FVector> Dirs;
+		TArray<FVector3f> Dirs;
 		Dirs.AddUninitialized(NumDirs);
 		for (int32 DirIdx = 0; DirIdx < NumDirs; ++DirIdx) { Dirs[DirIdx] = KDopDir18[DirIdx]; }
 		GenerateKDopAsSimpleCollision(StaticMesh, Dirs);
@@ -1228,36 +1228,36 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 	RawMesh.WedgeTexCoords[0].AddZeroed(WedgeOffset + WedgeCount - RawMesh.WedgeTexCoords[0].Num());
 	{
 		int32 TriangleIndex = 0;
-		FVector FbxPosition(10, 0, 0);
-		FVector FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
+		FVector3f FbxPosition(10, 0, 0);
+		FVector3f FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
 		int32 VertexIndex = RawMesh.VertexPositions.Add(/*Converter.ConvertPos*/(FinalPosition));
 		int32 WedgeIndex = WedgeOffset + TriangleIndex * 3 + VertexIndex;
 		RawMesh.WedgeIndices[WedgeIndex]= VertexIndex;
-		RawMesh.WedgeTangentX[WedgeIndex] = FVector(1, 0, 0);
-		RawMesh.WedgeTangentY[WedgeIndex] = FVector(0, 1, 0);
-		RawMesh.WedgeTangentZ[WedgeIndex] = FVector(0, 0, 1);
+		RawMesh.WedgeTangentX[WedgeIndex] = FVector3f(1, 0, 0);
+		RawMesh.WedgeTangentY[WedgeIndex] = FVector3f(0, 1, 0);
+		RawMesh.WedgeTangentZ[WedgeIndex] = FVector3f(0, 0, 1);
 	}
 	{
 		int32 TriangleIndex = 0;
-		FVector FbxPosition(-10, 0, 0);
-		FVector FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
+		FVector3f FbxPosition(-10, 0, 0);
+		FVector3f FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
 		int32 VertexIndex = RawMesh.VertexPositions.Add(/*Converter.ConvertPos*/(FinalPosition));
 		int32 WedgeIndex = WedgeOffset + TriangleIndex * 3 + VertexIndex;
 		RawMesh.WedgeIndices[WedgeIndex] = VertexIndex;
-		RawMesh.WedgeTangentX[WedgeIndex] = FVector(1, 0, 0);
-		RawMesh.WedgeTangentY[WedgeIndex] = FVector(0, 1, 0);
-		RawMesh.WedgeTangentZ[WedgeIndex] = FVector(0, 0, 1);
+		RawMesh.WedgeTangentX[WedgeIndex] = FVector3f(1, 0, 0);
+		RawMesh.WedgeTangentY[WedgeIndex] = FVector3f(0, 1, 0);
+		RawMesh.WedgeTangentZ[WedgeIndex] = FVector3f(0, 0, 1);
 	}
 	{
 		int32 TriangleIndex = 0;
-		FVector FbxPosition(0, 0, 0);
-		FVector FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
+		FVector3f FbxPosition(0, 0, 0);
+		FVector3f FinalPosition = FbxPosition;// TotalMatrix.MultT(FbxPosition);
 		int32 VertexIndex = RawMesh.VertexPositions.Add(/*Converter.ConvertPos*/(FinalPosition));
 		int32 WedgeIndex = WedgeOffset + TriangleIndex * 3 + VertexIndex;
 		RawMesh.WedgeIndices[WedgeIndex] = VertexIndex;
-		RawMesh.WedgeTangentX[WedgeIndex] = FVector(1, 0, 0);
-		RawMesh.WedgeTangentY[WedgeIndex] = FVector(0, 1, 0);
-		RawMesh.WedgeTangentZ[WedgeIndex] = FVector(0, 0, 1);
+		RawMesh.WedgeTangentX[WedgeIndex] = FVector3f(1, 0, 0);
+		RawMesh.WedgeTangentY[WedgeIndex] = FVector3f(0, 1, 0);
+		RawMesh.WedgeTangentZ[WedgeIndex] = FVector3f(0, 0, 1);
 	}
 	/*
 	// When importing multiple mesh pieces to the same static mesh.  Ensure each mesh piece has the same number of Uv's
@@ -1335,7 +1335,7 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 
 					FbxVector4 TempValue = LayerElementTangent->GetDirectArray().GetAt(TangentValueIndex);
 					TempValue = TotalMatrixForNormal.MultT(TempValue);
-					FVector TangentX = Converter.ConvertDir(TempValue);
+					FVector3f TangentX = Converter.ConvertDir(TempValue);
 					RawMesh.WedgeTangentX[WedgeIndex] = TangentX.SafeNormal();
 
 					int BinormalMapIndex = (BinormalMappingMode == FbxLayerElement::eByControlPoint) ?
@@ -1345,13 +1345,13 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 
 					TempValue = LayerElementBinormal->GetDirectArray().GetAt(BinormalValueIndex);
 					TempValue = TotalMatrixForNormal.MultT(TempValue);
-					FVector TangentY = -Converter.ConvertDir(TempValue);
+					FVector3f TangentY = -Converter.ConvertDir(TempValue);
 					RawMesh.WedgeTangentY[WedgeIndex] = TangentY.SafeNormal();
 				}
 
 				FbxVector4 TempValue = LayerElementNormal->GetDirectArray().GetAt(NormalValueIndex);
 				TempValue = TotalMatrixForNormal.MultT(TempValue);
-				FVector TangentZ = Converter.ConvertDir(TempValue);
+				FVector3f TangentZ = Converter.ConvertDir(TempValue);
 				RawMesh.WedgeTangentZ[WedgeIndex] = TangentZ.SafeNormal();
 			}
 
@@ -1379,7 +1379,7 @@ bool UMyUObjectTestClsFactory::BuildStaticMeshFromGeometry(
 			{
 				// try to match this triangles current vertex with one that existed in the previous mesh.
 				// This is a find in a tmap which uses a fast hash table lookup.
-				FVector Position = RawMesh.VertexPositions[RawMesh.WedgeIndices[WedgeIndex]];
+				FVector3f Position = RawMesh.VertexPositions[RawMesh.WedgeIndices[WedgeIndex]];
 				FColor* PaintedColor = ExistingVertexColorData->Find(Position);
 				if (PaintedColor)
 				{
@@ -1515,8 +1515,8 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMeshFromBrush(
 //
 
 inline bool UMyUObjectTestClsFactory::FVerticesEqual(
-	FVector& V1,
-	FVector& V2
+	FVector3f& V1,
+	FVector3f& V2
 	)
 {
 	if (FMath::Abs(V1.X - V2.X) > THRESH_POINTS_ARE_SAME * 4.0f)
@@ -1557,7 +1557,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 	int32 NumPolys = Polys.Num();
 
 	// For each polygon in the model...
-	TArray<FVector> TempPositions;
+	TArray<FVector3f> TempPositions;
 	for (int32 PolygonIndex = 0; PolygonIndex < NumPolys; ++PolygonIndex)
 	{
 		FPoly& Polygon = Polys[PolygonIndex];
@@ -1570,7 +1570,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 
 		// Cache the texture coordinate system for this polygon.
 
-		FVector	TextureBase = Polygon.Base - (/*Brush ? Brush->GetPrePivot() : */FVector::ZeroVector),
+		FVector3f	TextureBase = Polygon.Base - (/*Brush ? Brush->GetPrePivot() : */FVector3f::ZeroVector),
 			TextureX = Polygon.TextureU / UModel::GetGlobalBSPTexelScale(),
 			TextureY = Polygon.TextureV / UModel::GetGlobalBSPTexelScale();
 
@@ -1583,7 +1583,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 			// Generate different smoothing mask for each poly to give the mesh hard edges.  Note: only 32 smoothing masks supported.
 			OutMesh.FaceSmoothingMasks.Add(1 << (PolygonIndex % 32));
 
-			FVector Positions[3];
+			FVector3f Positions[3];
 			FVector2D UVs[3];
 
 
@@ -1610,7 +1610,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 	// Merge vertices within a certain distance of each other.
 	for (int32 i = 0; i < TempPositions.Num(); ++i)
 	{
-		FVector Position = TempPositions[i];
+		FVector3f Position = TempPositions[i];
 		int32 FinalIndex = INDEX_NONE;
 		for (int32 VertexIndex = 0; VertexIndex < OutMesh.VertexPositions.Num(); ++VertexIndex)
 		{
@@ -1631,7 +1631,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 	int32 NumPolys = pmxMeshInfoPtr->faseList.Num();
 
 	// For each polygon in the model...
-	TArray<FVector> TempPositions;
+	TArray<FVector3f> TempPositions;
 	for (int32 PolygonIndex = 0; PolygonIndex < NumPolys; ++PolygonIndex)
 	{
 		PMX_VERTEX& Polygon = pmxMeshInfoPtr->vertexList[PolygonIndex];
@@ -1644,7 +1644,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 
 		// Cache the texture coordinate system for this polygon.
 
-		FVector	TextureBase = Polygon.Position - (/*Brush ? Brush->GetPrePivot() : */FVector::ZeroVector),
+		FVector3f	TextureBase = Polygon.Position - (/*Brush ? Brush->GetPrePivot() : */FVector3f::ZeroVector),
 			TextureX = Polygon.UV.X / UModel::GetGlobalBSPTexelScale(),
 			TextureY = Polygon.UV.Y / UModel::GetGlobalBSPTexelScale();
 
@@ -1657,7 +1657,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 			// Generate different smoothing mask for each poly to give the mesh hard edges.  Note: only 32 smoothing masks supported.
 			OutMesh.FaceSmoothingMasks.Add(1 << (PolygonIndex % 32));
 
-			FVector Positions[3];
+			FVector3f Positions[3];
 			FVector2D UVs[3];
 
 
@@ -1709,7 +1709,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 				//int k = 2;
 				OutMesh.WedgeIndices.Add(pmxMeshInfoPtr->faseList[i].VertexIndex[k]);
 				OutMesh.WedgeTexCoords[0].Add(pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].UV);
-				FVector TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
+				FVector3f TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
 				OutMesh.WedgeTangentZ.Add(TangentZ.GetSafeNormal());
 				facecount++;
 			}
@@ -1720,7 +1720,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 			{
 				OutMesh.WedgeIndices.Add(pmxMeshInfoPtr->faseList[i].VertexIndex[k]);
 				OutMesh.WedgeTexCoords[0].Add(pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].UV);
-				FVector TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
+				FVector3f TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
 				OutMesh.WedgeTangentZ.Add(TangentZ.GetSafeNormal());
 				facecount++;
 			}
@@ -1737,7 +1737,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 	// Merge vertices within a certain distance of each other.
 	for (int32 i = 0; i < pmxMeshInfoPtr->vertexList.Num(); ++i)
 	{
-		FVector Position = pmxMeshInfoPtr->vertexList[i].Position;
+		FVector3f Position = pmxMeshInfoPtr->vertexList[i].Position;
 		OutMesh.VertexPositions.Add(Position);
 	}
 #endif
@@ -1762,7 +1762,7 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMesh(
 	ImportSubsystem->OnAssetPostImport.Broadcast(this, StaticMesh);
 
 	// Add one LOD for the base mesh
-	FStaticMeshSourceModel* SrcModel = new(StaticMesh->GetSourceModels()) FStaticMeshSourceModel();
+	FStaticMeshSourceModel* SrcModel = new/*(StaticMesh->GetSourceModels())*/ FStaticMeshSourceModel();
 	SrcModel->RawMeshBulkData->SaveRawMesh(RawMesh);
 	//StaticMesh->Materials = Materials;
 
@@ -1806,7 +1806,7 @@ AActor* UMyUObjectTestClsFactory::ConvertBrushesToStaticMesh(
 	const FString& InStaticMeshPackageName, 
 	//TArray<ABrush*>& InBrushesToConvert,
 	MMD4UE4::PmxMeshInfo *pmxMeshInfoPtr,
-	const FVector& InPivotLocation,
+	const FVector3f& InPivotLocation,
 	TArray<UMaterialInterface*>& Materials
 	)
 {
@@ -1863,7 +1863,7 @@ AActor* UMyUObjectTestClsFactory::ConvertBrushesToStaticMesh(
 	check(Pkg != nullptr);
 
 
-	FVector Location(0.0f, 0.0f, 0.0f);
+	FVector3f Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	/*
 	for (int32 BrushesIdx = 0; BrushesIdx < InBrushesToConvert.Num(); ++BrushesIdx)
