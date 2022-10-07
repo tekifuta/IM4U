@@ -29,7 +29,6 @@ namespace UnrealBuildTool.Rules
 			PublicSystemIncludePaths.Add(LibEHWinIncPath);
 
 			string LibEHWinLibPath = LibEHWinSourcePath + "lib/";
-			PublicLibraryPaths.Add(LibEHWinLibPath);
 
 			bool FoundLibEHWinDirs = true;
 			if (!Directory.Exists(LibEHWinSourcePath))
@@ -109,7 +108,8 @@ namespace UnrealBuildTool.Rules
 				new string[]
 				{
 					"EditorStyle",
-					"EditorWidgets"
+					"EditorWidgets",
+					"SkeletalMeshUtilitiesCommon"
 					// ... add private dependencies that you statically link with here ...
 				}
 				);

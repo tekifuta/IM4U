@@ -138,7 +138,7 @@ class UPmxImportUI : public UObject
 	//class UFbxTextureImportData* TextureImportData;
 
 	// Begin UObject Interface
-	virtual bool CanEditChange(const UProperty* InProperty) const override;
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
 	// End UObject Interface
 
 	/////////////////////////

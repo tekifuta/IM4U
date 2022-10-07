@@ -273,7 +273,7 @@ UVmdImportUI::UVmdImportUI(const FObjectInitializer& ObjectInitializer)
 }
 
 
-bool UVmdImportUI::CanEditChange(const UProperty* InProperty) const
+bool UVmdImportUI::CanEditChange(const FProperty* InProperty) const
 {
 	bool bIsMutable = Super::CanEditChange(InProperty);
 	if (bIsMutable && InProperty != NULL)

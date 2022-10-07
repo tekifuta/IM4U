@@ -39,6 +39,7 @@
 #include "Editor/UnrealEd/Public/PhysicsAssetUtils.h"
 ////////////
 
+#include "LODUtilities.h"
 #include "PmdImporter.h"
 #include "PmxImporter.h"
 #include "PmxImportUI.h"
@@ -47,6 +48,7 @@
 #include "MMDStaticMeshImportData.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Factories/FbxSkeletalMeshImportData.h"
 #include "Rendering/SkeletalMeshModel.h"
 
 
@@ -59,9 +61,7 @@ DEFINE_LOG_CATEGORY(LogMMD4UE4_PMXFactory)
 // and a handfull of other minor stuff needed by these 
 // Fully taken from SkeletalMeshImport.cpp
 
-extern void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData);
-extern void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalMeshImportData& ImportData);
-extern bool ProcessImportMeshSkeleton(const USkeleton* SkeletonAsset, FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData);
+
 
 /////////////////////////////////////////////////////////
 
@@ -135,15 +135,15 @@ UObject* UPmxFactory::FactoryCreateBinary
 #ifdef DEBUG_MMD_PLUGIN_STATICMESH
 	importAssetTypeMMD = E_MMD_TO_UE4_STATICMESH;
 #endif
-
+	UImportSubsystem* ImportSubsystem = GEditor->GetEditorSubsystem<UImportSubsystem>();
 	if (bOperationCanceled)
 	{
-		bOutOperationCanceled = true;
-		FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
+		bOutOperationCanceled = true;		
+		ImportSubsystem->OnAssetPostImport.Broadcast(this, NULL);
 		return NULL;
 	}
 
-	FEditorDelegates::OnAssetPreImport.Broadcast(this, Class, InParent, Name, Type);
+	ImportSubsystem->OnAssetPreImport.Broadcast(this, Class, InParent, Name, Type);
 
 	UObject* NewObject = NULL;
 
@@ -221,7 +221,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 	{
 		// Log the error message and fail the import.
 		Warn->Log(ELogVerbosity::Error, "PMX Import ERR...FLT");
-		FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
+		ImportSubsystem->OnAssetPostImport.Broadcast(this, NULL);
 		return NULL;
 	}
 	else
@@ -234,7 +234,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 			FText::FromString(pmxMeshInfoPtr.modelNameJP), FText::FromString(pmxMeshInfoPtr.modelCommentJP));
 		if (EAppReturnType::Ok != FMessageDialog::Open(EAppMsgType::OkCancel, Message))
 		{
-			FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
+			ImportSubsystem->OnAssetPostImport.Broadcast(this, NULL);
 			return NULL;
 		}
 		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
@@ -623,7 +623,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 		//UE_LOG(LogAssetTools, Warning, TEXT("%s"), *Message.ToString());
 	}
 
-	FEditorDelegates::OnAssetPostImport.Broadcast(this, NewObject);
+	ImportSubsystem->OnAssetPostImport.Broadcast(this, NewObject);
 
 	return NewObject;
 }
@@ -1173,11 +1173,11 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	}
 
 	// process materials from import data
-	ProcessImportMeshMaterials(SkeletalMesh->Materials, *SkelMeshImportDataPtr);
+	SkeletalMeshHelper::ProcessImportMeshMaterials(SkeletalMesh->Materials, *SkelMeshImportDataPtr);
 
 	// process reference skeleton from import data
 	int32 SkeletalDepth = 0;
-	if (!ProcessImportMeshSkeleton(SkeletalMesh->Skeleton, SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
+	if (!SkeletalMeshHelper::ProcessImportMeshSkeleton(SkeletalMesh->Skeleton, SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
 	{
 		SkeletalMesh->ClearFlags(RF_Standalone);
 		SkeletalMesh->Rename(NULL, GetTransientPackage());
@@ -1186,12 +1186,12 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("Bones digested - %i  Depth of hierarchy - %i"), SkeletalMesh->RefSkeleton.GetNum(), SkeletalDepth);
 
 	// process bone influences from import data
-	ProcessImportMeshInfluences(*SkelMeshImportDataPtr);
+	FLODUtilities::ProcessImportMeshInfluences(SkelMeshImportDataPtr->Wedges.Num(), SkelMeshImportDataPtr->Influences, SkeletalMesh->GetPathName());
 
 	FSkeletalMeshModel* ImportedResource = SkeletalMesh->GetImportedModel();
 	check(ImportedResource->LODModels.Num() == 0);
 	ImportedResource->LODModels.Empty();
-	new(ImportedResource->LODModels)FSkeletalMeshLODModel();
+	ImportedResource->LODModels.Add(new FSkeletalMeshLODModel);
 
 	SkeletalMesh->ResetLODInfo();
 	FSkeletalMeshLODInfo & NewLODInfo = SkeletalMesh->AddLODInfo();
@@ -1258,6 +1258,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 #else /* UE4.11~ over */
 		if (!MeshUtilities.BuildSkeletalMesh(
 			ImportedResource->LODModels[0],
+			SkeletalMesh->GetName(),
 			SkeletalMesh->RefSkeleton,
 			LODInfluences,
 			LODWedges,

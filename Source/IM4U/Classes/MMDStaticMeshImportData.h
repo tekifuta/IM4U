@@ -58,7 +58,7 @@ class UMMDStaticMeshImportData : public UMMDMeshImportData
 	/** Gets or creates MMD import data for the specified static mesh */
 	static UMMDStaticMeshImportData* GetImportDataForStaticMesh(UStaticMesh* StaticMesh, UMMDStaticMeshImportData* TemplateForCreation);
 
-	bool CanEditChange( const UProperty* InProperty ) const;
+	bool CanEditChange( const FProperty* InProperty ) const;
 };
 
 

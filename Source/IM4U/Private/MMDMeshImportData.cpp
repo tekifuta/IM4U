@@ -10,7 +10,7 @@ UMMDMeshImportData::UMMDMeshImportData(const FObjectInitializer& ObjectInitializ
 	NormalImportMethod = MMDNIM_ComputeNormals;
 }
 
-bool UMMDMeshImportData::CanEditChange(const UProperty* InProperty) const
+bool UMMDMeshImportData::CanEditChange(const FProperty* InProperty) const
 {
 	bool bMutable = Super::CanEditChange(InProperty);
 	UObject* Outer = GetOuter();

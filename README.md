@@ -12,21 +12,23 @@ Original repository contributors:
 * alwei https://github.com/alwei
 * demuyan https://github.com/demuyan
 
+This is a fork from the last maintainer [tekifuta](https://github.com/tekifuta) mainly done to make it work again. 
+I have not only fix the building but also cleaned all the warnings about deprecated manners of doing stuff, just 
+to make it easy to keep it working in future versions without doing a lot of effort. 
+
 This software is released under the MIT License.
 
 This repository is public and doesn't requires a GitHub account with access to Unreal Engine 4 source code to see it. You can add this repository as a git submodule directly into your Unreal Engine 4 project plugins folder.
 
-Latest Unreal Engine 4 version tested: **4.25.1**
+Latest Unreal Engine 4 version tested: **4.26.2**
 
 # Get Start
+1. Get the entire IM4U plug-in source from GitHub
+2. Copy "IM4U" folder to the "Plugins" folder of the UE project you want to install.
+3. Run your project, it should prompt you a message informing you that the plugin will be compiled
+4. Import MMD files (pmx, pmd, vmd) in ContentsBrowser and generate Asset according to each display
 
-1. GitHubからIM4Uのプラグインソースを丸ごと取得
-2. 取得したソースから導入したいUEのプロジェクト(C++)の「Plugins」フォルダに本プラグイン「IM4U」フォルダ毎コピーする
-3. プロジェクトを起動し、プラグインのビルドを実行させる
-4. ビルドが完了しエディタが起動した際に、プラグインでIM4Uがインポートされていることを確認
-5. ContentsBrowser内にMMD系ファイル(pmx,pmd,vmd)をインポートし各表示にしたがってAssetを生成する
-
-UE4にMMDで作成したモデルやVMDファイルをそのままDrag&Dropでインポートすることが出来ます。  
+Models and VMD files created by MMD can be imported to UE4 as they are by Drag & Drop.
 
 # 制限事項および注意事項
 
