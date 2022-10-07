@@ -12,10 +12,6 @@ Original repository contributors:
 * alwei https://github.com/alwei
 * demuyan https://github.com/demuyan
 
-This is a fork from the last maintainer [tekifuta](https://github.com/tekifuta) mainly done to make it work again. 
-I have not only fix the building but also cleaned all the warnings about deprecated manners of doing stuff, just 
-to make it easy to keep it working in future versions without doing a lot of effort. 
-
 This software is released under the MIT License.
 
 This repository is public and doesn't requires a GitHub account with access to Unreal Engine 4 source code to see it. You can add this repository as a git submodule directly into your Unreal Engine 4 project plugins folder.
